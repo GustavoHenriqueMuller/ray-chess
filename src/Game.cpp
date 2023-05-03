@@ -134,9 +134,9 @@ void Game::DoMove(const Position& move) {
 
     // Swap positions.
     board.Set(move, selectedPiece);
-    board.Set(selectedPiece->position, nullptr);
+    board.Set(selectedPiece->GetPosition(), nullptr);
 
-    selectedPiece->position = move;
+    selectedPiece->Move(move);
 
     // Swap turns.
     this->turnColor = this->turnColor == Piece::PIECE_WHITE ? Piece::PIECE_BLACK : Piece::PIECE_WHITE;

@@ -17,11 +17,18 @@ public:
     };
 
     Piece(Position position, PIECE_COLOR color, const Texture& texture): position(position), color(color), texture(texture) {}
+
+    virtual void Move(const Position& move) = 0;
     virtual std::vector<Position> GetPossibleMoves(const Board& board) = 0;
 
-    Position position;
+    Position GetPosition() { return position; }
+
     PIECE_COLOR color;
     const Texture& texture;
+
+protected:
+    Position position;
+    bool hasMoved = false;
 };
 
 #endif //RAY_CHESS_PIECE_H
