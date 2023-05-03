@@ -38,37 +38,37 @@ void Game::LoadTextures() {
 void Game::InitBoard() {
     // Init black pieces (computer).
     for (int j = 0; j < 8; j++) {
-        board.Set({1, j}, new Peon({1, j}, Piece::PIECE_COLOR::PIECE_BLACK, textures.at("bp")));
+        board.Set({1, j}, new Peon({1, j}, Piece::TYPE::TYPE_BLACK, textures.at("bp")));
     }
 
-    board.Set({0, 0}, new Rook({0, 0}, Piece::PIECE_BLACK, textures.at("br")));
-    board.Set({0, 7}, new Rook({0, 7}, Piece::PIECE_BLACK, textures.at("br")));
+    board.Set({0, 0}, new Rook({0, 0}, Piece::TYPE::TYPE_BLACK, textures.at("br")));
+    board.Set({0, 7}, new Rook({0, 7}, Piece::TYPE::TYPE_BLACK, textures.at("br")));
 
-    //board[0][1] = new Piece {{0, 1}, Piece::PIECE_BLACK, textures.at("bn")};
-    //board[0][6] = new Piece {{0, 6}, Piece::PIECE_BLACK, textures.at("bn")};
+    //board[0][1] = new Piece {{0, 1}, PIECE_COLOR::::PIECE_BLACK, textures.at("bn")};
+    //board[0][6] = new Piece {{0, 6}, PIECE_COLOR::::PIECE_BLACK, textures.at("bn")};
 
-    //board[0][2] = new Piece {{0, 2}, Piece::PIECE_BLACK, textures.at("bb")};
-    //board[0][5] = new Piece {{0, 3}, Piece::PIECE_BLACK, textures.at("bb")};
+    //board[0][2] = new Piece {{0, 2}, PIECE_COLOR::::PIECE_BLACK, textures.at("bb")};
+    //board[0][5] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_BLACK, textures.at("bb")};
 
-    //board[0][3] = new Piece {{0, 3}, Piece::PIECE_BLACK, textures.at("bq")};
-    //board[0][4] = new Piece {{0, 3}, Piece::PIECE_BLACK, textures.at("bk")};
+    //board[0][3] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_BLACK, textures.at("bq")};
+    //board[0][4] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_BLACK, textures.at("bk")};
 
     // Init white pieces (player).
     for (int j = 0; j < 8; j++) {
-        board.Set({6, j}, new Peon({6, j}, Piece::PIECE_COLOR::PIECE_WHITE, textures.at("wp")));
+        board.Set({6, j}, new Peon({6, j}, Piece::TYPE::TYPE_WHITE, textures.at("wp")));
     }
 
-    board.Set({7, 0}, new Rook({0, 0}, Piece::PIECE_WHITE, textures.at("wr")));
-    board.Set({7, 7}, new Rook({0, 7}, Piece::PIECE_WHITE, textures.at("wr")));
+    board.Set({7, 0}, new Rook({0, 0}, Piece::TYPE::TYPE_WHITE, textures.at("wr")));
+    board.Set({7, 7}, new Rook({0, 7}, Piece::TYPE::TYPE_WHITE, textures.at("wr")));
 
-    //board[7][1] = new Piece {{0, 1}, Piece::PIECE_WHITE, textures.at("wn")};
-    //board[7][6] = new Piece {{0, 6}, Piece::PIECE_WHITE, textures.at("wn")};
+    //board[7][1] = new Piece {{0, 1}, PIECE_COLOR::::PIECE_WHITE, textures.at("wn")};
+    //board[7][6] = new Piece {{0, 6}, PIECE_COLOR::::PIECE_WHITE, textures.at("wn")};
 
-    //board[7][2] = new Piece {{0, 2}, Piece::PIECE_WHITE, textures.at("wb")};
-    //board[7][5] = new Piece {{0, 3}, Piece::PIECE_WHITE, textures.at("wb")};
+    //board[7][2] = new Piece {{0, 2}, PIECE_COLOR::::PIECE_WHITE, textures.at("wb")};
+    //board[7][5] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_WHITE, textures.at("wb")};
 
-    //board[7][3] = new Piece {{0, 3}, Piece::PIECE_WHITE, textures.at("wq")};
-    //board[7][4] = new Piece {{0, 3}, Piece::PIECE_WHITE, textures.at("wk")};
+    //board[7][3] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_WHITE, textures.at("wq")};
+    //board[7][4] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_WHITE, textures.at("wk")};
 }
 
 Game::~Game() {
@@ -90,6 +90,7 @@ void Game::Run() {
             RenderBackground();
             RenderPieces();
             RenderMovesSelectedPiece();
+            RenderGuideText();
         EndDrawing();
     }
 }
@@ -102,7 +103,7 @@ void Game::HandleInput() {
         Piece* clickedPiece = board.At(clickedPosition);
 
         // Select piece.
-        if (clickedPiece != nullptr && clickedPiece->color == turnColor) {
+        if (clickedPiece != nullptr && clickedPiece->type == turn) {
             selectedPiece = clickedPiece;
             possibleMoves = selectedPiece->GetPossibleMoves(board);
         } else {
@@ -129,7 +130,7 @@ bool Game::IsValidMove(const Position& move) {
 
 void Game::DoMove(const Position& move) {
     // Delete piece, if any.
-    if (board.At(move) && board.At(move)->color != selectedPiece->color) {
+    if (board.At(move) && board.At(move)->type != selectedPiece->type) {
         board.Destroy(move);
     }
 
@@ -140,7 +141,7 @@ void Game::DoMove(const Position& move) {
     selectedPiece->Move(move);
 
     // Swap turns.
-    this->turnColor = this->turnColor == Piece::PIECE_WHITE ? Piece::PIECE_BLACK : Piece::PIECE_WHITE;
+    this->turn = GetInverseType(this->turn);
 }
 
 void Game::RenderBackground() {
@@ -149,14 +150,25 @@ void Game::RenderBackground() {
             int x = j * Game::CELL_SIZE;
             int y = i * Game::CELL_SIZE;
 
-            int startingColorInRow = i % 2 == 0 ? 0 : 1;
-            int colorIndex = (startingColorInRow + j) % 2;
-
-            Color color = colorIndex == 0 ? LIGHT_COLOR : DARK_COLOR;
-
-            DrawRectangle(x, y, Game::CELL_SIZE, Game::CELL_SIZE, color);
+            Color cellColor = GetTypeOfCell({i, j}) == Piece::TYPE::TYPE_WHITE ? LIGHT_COLOR : DARK_COLOR;
+            DrawRectangle(x, y, Game::CELL_SIZE, Game::CELL_SIZE, cellColor);
         }
     }
+}
+
+Color Game::GetColorOfType(Piece::TYPE type) {
+    return type == Piece::TYPE::TYPE_WHITE ? LIGHT_COLOR : DARK_COLOR;
+}
+
+Piece::TYPE Game::GetTypeOfCell(const Position& cellPosition) {
+    int startingColorInRow = cellPosition.i % 2 == 0 ? 0 : 1;
+    int colorIndex = (startingColorInRow + cellPosition.j) % 2;
+
+    return colorIndex == 0 ? Piece::TYPE::TYPE_WHITE : Piece::TYPE::TYPE_BLACK;
+}
+
+Piece::TYPE Game::GetInverseType(Piece::TYPE type) {
+    return type == Piece::TYPE::TYPE_WHITE ? Piece::TYPE::TYPE_BLACK : Piece::TYPE::TYPE_WHITE;
 }
 
 void Game::RenderPieces() {
@@ -184,6 +196,41 @@ void Game::RenderMovesSelectedPiece() {
             radius,
             Color{0, 0, 0, 127}
         );
+    }
+}
+
+void Game::RenderGuideText() {
+    int padding = 3;
+    int characterSize = 10;
+
+    // Render 1-8 numbers (rows).
+    for (int i = 0; i < 8; i++) {
+        Color textColor = GetColorOfType(GetInverseType(GetTypeOfCell({i, 0})));
+
+        // Render text.
+        int x = padding;
+        int y = i * CELL_SIZE + padding;
+
+        char text[2];
+        text[0] = i + 48 + 1;
+        text[1] = 0;
+
+        DrawText(text, x, y, 20, textColor);
+    }
+
+    // Render h-a characters (columns).
+    for (int j = 0; j < 8; j++) {
+        Color textColor = GetColorOfType(GetInverseType(GetTypeOfCell({7, j})));
+
+        // Render text.
+        int x = (j + 1) * CELL_SIZE - characterSize - padding;
+        int y = WINDOW_HEIGHT - characterSize * 1.75 - padding;
+
+        char text[2];
+        text[0] = (7 - j) + 97;
+        text[1] = 0;
+
+        DrawText(text, x, y, 20, textColor);
     }
 }
 

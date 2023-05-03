@@ -11,19 +11,19 @@ class Piece; // Forward declaration (circular dependency).
 
 class Piece {
 public:
-    enum PIECE_COLOR {
-        PIECE_WHITE,
-        PIECE_BLACK
+    enum TYPE {
+        TYPE_WHITE,
+        TYPE_BLACK
     };
 
-    Piece(Position position, PIECE_COLOR color, const Texture& texture): position(position), color(color), texture(texture) {}
+    Piece(Position position, TYPE type, const Texture& texture): position(position), type(type), texture(texture) {}
 
     virtual void Move(const Position& move) = 0;
     virtual std::vector<Position> GetPossibleMoves(const Board& board) = 0;
 
     Position GetPosition() { return position; }
 
-    PIECE_COLOR color;
+    TYPE type;
     const Texture& texture;
 
 protected:
