@@ -1,41 +1,18 @@
 #include "Game.h"
+#include "Position.h"
 #include "raylib.h"
 
+#include "pieces/Peon.h"
+
 #include <filesystem>
+#include <iostream>
 
 Game::Game() {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RayChess");
     SetTargetFPS(60);
 
-    this->LoadTextures();
-    this->InitBoard();
-}
-
-Game::~Game() {
-    // Free textures.
-    for (auto const& kv : this->textures) {
-        UnloadTexture(kv.second);
-    }
-
-    // Free board.
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            if (board[i][j] != nullptr) {
-                delete board[i][j];
-            }
-        }
-    }
-
-    CloseWindow();
-}
-
-void Game::Run() {
-    while (!WindowShouldClose()){
-        BeginDrawing();
-            this->RenderBackground();
-            this->RenderPieces();
-        EndDrawing();
-    }
+    LoadTextures();
+    InitBoard();
 }
 
 void Game::LoadTextures() {
@@ -50,7 +27,7 @@ void Game::LoadTextures() {
 
         // Add texture to map of textures.
         std::string fileNameWithoutExtension = entry.path().filename().string().substr(0, 2);
-        this->textures[fileNameWithoutExtension] = texture;
+        textures[fileNameWithoutExtension] = texture;
 
         // Free image data.
         UnloadImage(image);
@@ -58,61 +35,115 @@ void Game::LoadTextures() {
 }
 
 void Game::InitBoard() {
-    // Clear board.
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            board[i][j] = nullptr;
-        }
-    }
-
     // Init black pieces (computer).
     for (int j = 0; j < 8; j++) {
-        this->board[1][j] = new Piece {
-            1,
-            j,
-            Piece::Color::PIECE_BLACK,
-            Piece::Type::PEON,
-            this->textures.at("bp")
-        };
+        board.Set({1, j}, new Peon({1, j}, Piece::PIECE_COLOR::PIECE_BLACK, textures.at("bp")));
     }
 
-    this->board[0][0] = new Piece {0, 0, Piece::PIECE_BLACK, Piece::ROOK, this->textures.at("br")};
-    this->board[0][7] = new Piece {0, 7, Piece::PIECE_BLACK, Piece::ROOK, this->textures.at("br")};
+    //board[0][0] = new Piece {{0, 0}, Piece::PIECE_BLACK, textures.at("br")};
+    //board[0][7] = new Piece {{0, 7}, Piece::PIECE_BLACK, textures.at("br")};
 
-    this->board[0][1] = new Piece {0, 1, Piece::PIECE_BLACK, Piece::KNIGHT, this->textures.at("bn")};
-    this->board[0][6] = new Piece {0, 6, Piece::PIECE_BLACK, Piece::KNIGHT, this->textures.at("bn")};
+    //board[0][1] = new Piece {{0, 1}, Piece::PIECE_BLACK, textures.at("bn")};
+    //board[0][6] = new Piece {{0, 6}, Piece::PIECE_BLACK, textures.at("bn")};
 
-    this->board[0][2] = new Piece {0, 2, Piece::PIECE_BLACK, Piece::BISHOP, this->textures.at("bb")};
-    this->board[0][5] = new Piece {0, 3, Piece::PIECE_BLACK, Piece::BISHOP, this->textures.at("bb")};
+    //board[0][2] = new Piece {{0, 2}, Piece::PIECE_BLACK, textures.at("bb")};
+    //board[0][5] = new Piece {{0, 3}, Piece::PIECE_BLACK, textures.at("bb")};
 
-    this->board[0][3] = new Piece {0, 3, Piece::PIECE_BLACK, Piece::QUEEN, this->textures.at("bq")};
-    this->board[0][4] = new Piece {0, 3, Piece::PIECE_BLACK, Piece::KING, this->textures.at("bk")};
+    //board[0][3] = new Piece {{0, 3}, Piece::PIECE_BLACK, textures.at("bq")};
+    //board[0][4] = new Piece {{0, 3}, Piece::PIECE_BLACK, textures.at("bk")};
 
     // Init white pieces (player).
     for (int j = 0; j < 8; j++) {
-        this->board[6][j] = new Piece {
-                1,
-                j,
-                Piece::Color::PIECE_BLACK,
-                Piece::Type::PEON,
-                this->textures.at("wp")
-        };
+        board.Set({6, j}, new Peon({6, j}, Piece::PIECE_COLOR::PIECE_WHITE, textures.at("wp")));
     }
 
-    this->board[7][0] = new Piece {0, 0, Piece::PIECE_WHITE, Piece::ROOK, this->textures.at("wr")};
-    this->board[7][7] = new Piece {0, 7, Piece::PIECE_WHITE, Piece::ROOK, this->textures.at("wr")};
+    //board[7][0] = new Piece {{0, 0}, Piece::PIECE_WHITE, textures.at("wr")};
+    //board[7][7] = new Piece {{0, 7}, Piece::PIECE_WHITE, textures.at("wr")};
 
-    this->board[7][1] = new Piece {0, 1, Piece::PIECE_WHITE, Piece::KNIGHT, this->textures.at("wn")};
-    this->board[7][6] = new Piece {0, 6, Piece::PIECE_WHITE, Piece::KNIGHT, this->textures.at("wn")};
+    //board[7][1] = new Piece {{0, 1}, Piece::PIECE_WHITE, textures.at("wn")};
+    //board[7][6] = new Piece {{0, 6}, Piece::PIECE_WHITE, textures.at("wn")};
 
-    this->board[7][2] = new Piece {0, 2, Piece::PIECE_WHITE, Piece::BISHOP, this->textures.at("wb")};
-    this->board[7][5] = new Piece {0, 3, Piece::PIECE_WHITE, Piece::BISHOP, this->textures.at("wb")};
+    //board[7][2] = new Piece {{0, 2}, Piece::PIECE_WHITE, textures.at("wb")};
+    //board[7][5] = new Piece {{0, 3}, Piece::PIECE_WHITE, textures.at("wb")};
 
-    this->board[7][3] = new Piece {0, 3, Piece::PIECE_WHITE, Piece::QUEEN, this->textures.at("wq")};
-    this->board[7][4] = new Piece {0, 3, Piece::PIECE_WHITE, Piece::KING, this->textures.at("wk")};
+    //board[7][3] = new Piece {{0, 3}, Piece::PIECE_WHITE, textures.at("wq")};
+    //board[7][4] = new Piece {{0, 3}, Piece::PIECE_WHITE, textures.at("wk")};
+}
+
+Game::~Game() {
+    // Free textures.
+    for (auto const& kv : textures) {
+        UnloadTexture(kv.second);
+    }
+
+    CloseWindow();
+}
+
+void Game::Run() {
+    while (!WindowShouldClose()){
+        // Input.
+        HandleInput();
+
+        // Render.
+        BeginDrawing();
+            RenderBackground();
+            RenderPieces();
+            RenderMovesSelectedPiece();
+        EndDrawing();
+    }
+}
+
+void Game::HandleInput() {
+    if (IsMouseButtonPressed(0)) {
+        Vector2 mousePosition = GetMousePosition();
+
+        Position clickedPosition = {int(mousePosition.y) / CELL_SIZE, int(mousePosition.x) / CELL_SIZE};
+        Piece* clickedPiece = board.At(clickedPosition);
+
+        // Select piece.
+        if (clickedPiece != nullptr && clickedPiece->color == turnColor) {
+            selectedPiece = clickedPiece;
+            possibleMoves = selectedPiece->GetPossibleMoves(board);
+        } else {
+            // Do movement.
+            if (selectedPiece != nullptr && IsValidMove(clickedPosition)) {
+                DoMove(clickedPosition);
+            }
+            
+            selectedPiece = nullptr;
+            possibleMoves.clear();
+        }
+    }
+}
+
+bool Game::IsValidMove(const Position& move) {
+    for (const Position& possibleMove : possibleMoves) {
+        if (move.i == possibleMove.i && move.j == possibleMove.j) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void Game::DoMove(const Position& move) {
+    // Delete piece, if any.
+    if (board.At(move) && board.At(move)->color != selectedPiece->color) {
+        board.Destroy(move);
+    }
+
+    // Swap positions.
+    board.Set(move, selectedPiece);
+    board.Set(selectedPiece->position, nullptr);
+
+    selectedPiece->position = move;
+
+    // Swap turns.
+    this->turnColor = this->turnColor == Piece::PIECE_WHITE ? Piece::PIECE_BLACK : Piece::PIECE_WHITE;
 }
 
 void Game::RenderBackground() {
+    // TODO: Fazer com que seja estático e constante.
     Color lightColor = Color{235, 236, 208, 255};
     Color darkColor = Color{119, 149, 86, 255};
 
@@ -134,7 +165,7 @@ void Game::RenderBackground() {
 void Game::RenderPieces() {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            Piece* piece = this->board[i][j];
+            Piece* piece = board.At({i, j});
 
             if (piece != nullptr) {
                 int x = j * CELL_SIZE;
@@ -143,6 +174,19 @@ void Game::RenderPieces() {
                 DrawTexture(piece->texture, x, y, WHITE);
             }
         }
+    }
+}
+
+void Game::RenderMovesSelectedPiece() {
+    for (const Position& move : possibleMoves) {
+        int radius = 17;
+
+        DrawCircle(
+            move.j * CELL_SIZE + CELL_SIZE / 2,
+            move.i * CELL_SIZE + CELL_SIZE / 2,
+            radius,
+            Color{0, 0, 0, 127}
+        );
     }
 }
 

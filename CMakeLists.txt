@@ -25,7 +25,7 @@ endif()
 
 # Our Project
 
-add_executable(${PROJECT_NAME} src/Main.cpp src/Game.cpp src/Game.h src/pieces/Piece.cpp src/pieces/Piece.h)
+add_executable(${PROJECT_NAME} src/Main.cpp src/Game.cpp src/Game.h src/pieces/Piece.h src/Position.h src/pieces/Peon.cpp src/pieces/Peon.h src/Board.h src/Board.cpp)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
 

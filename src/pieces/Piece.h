@@ -1,30 +1,27 @@
 #ifndef RAY_CHESS_PIECE_H
 #define RAY_CHESS_PIECE_H
 
+class Piece; // Forward declaration (circular dependency).
+
 #include "raylib.h"
+#include "../Position.h"
+#include "../Board.h"
+
+#include <vector>
 
 class Piece {
 public:
-    enum Color {
+    enum PIECE_COLOR {
         PIECE_WHITE,
         PIECE_BLACK
     };
 
-    enum Type {
-        PEON,
-        ROOK,
-        KNIGHT,
-        BISHOP,
-        QUEEN,
-        KING
-    };
+    Piece(Position position, PIECE_COLOR color, const Texture& texture): position(position), color(color), texture(texture) {}
+    virtual std::vector<Position> GetPossibleMoves(const Board& board) = 0;
 
-    int i, j;
-
-    Color color;
-    Type type;
-    Texture texture;
+    Position position;
+    PIECE_COLOR color;
+    const Texture& texture;
 };
-
 
 #endif //RAY_CHESS_PIECE_H

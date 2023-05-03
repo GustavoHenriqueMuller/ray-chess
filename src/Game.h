@@ -5,6 +5,7 @@
 #include <map>
 
 #include "pieces/Piece.h"
+#include "Board.h"
 #include "raylib.h"
 
 class Game {
@@ -21,12 +22,20 @@ public:
 private:
     void LoadTextures();
     void InitBoard();
+    void HandleInput();
+    bool IsValidMove(const Position& move);
+    void DoMove(const Position& move);
 
     void RenderBackground();
     void RenderPieces();
+    void RenderMovesSelectedPiece();
 
-    Piece* board[8][8];
+    Board board;
     std::map<std::string, Texture> textures;
+
+    Piece::PIECE_COLOR turnColor = Piece::PIECE_WHITE;
+    Piece* selectedPiece = nullptr;
+    std::vector<Position> possibleMoves;
 };
 
 #endif //RAY_CHESS_GAME_H
