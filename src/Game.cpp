@@ -3,6 +3,7 @@
 #include "raylib.h"
 
 #include "pieces/Peon.h"
+#include "pieces/Rook.h"
 
 #include <filesystem>
 #include <iostream>
@@ -40,8 +41,8 @@ void Game::InitBoard() {
         board.Set({1, j}, new Peon({1, j}, Piece::PIECE_COLOR::PIECE_BLACK, textures.at("bp")));
     }
 
-    //board[0][0] = new Piece {{0, 0}, Piece::PIECE_BLACK, textures.at("br")};
-    //board[0][7] = new Piece {{0, 7}, Piece::PIECE_BLACK, textures.at("br")};
+    board.Set({0, 0}, new Rook({0, 0}, Piece::PIECE_BLACK, textures.at("br")));
+    board.Set({0, 7}, new Rook({0, 7}, Piece::PIECE_BLACK, textures.at("br")));
 
     //board[0][1] = new Piece {{0, 1}, Piece::PIECE_BLACK, textures.at("bn")};
     //board[0][6] = new Piece {{0, 6}, Piece::PIECE_BLACK, textures.at("bn")};
@@ -57,8 +58,8 @@ void Game::InitBoard() {
         board.Set({6, j}, new Peon({6, j}, Piece::PIECE_COLOR::PIECE_WHITE, textures.at("wp")));
     }
 
-    //board[7][0] = new Piece {{0, 0}, Piece::PIECE_WHITE, textures.at("wr")};
-    //board[7][7] = new Piece {{0, 7}, Piece::PIECE_WHITE, textures.at("wr")};
+    board.Set({7, 0}, new Rook({0, 0}, Piece::PIECE_WHITE, textures.at("wr")));
+    board.Set({7, 7}, new Rook({0, 7}, Piece::PIECE_WHITE, textures.at("wr")));
 
     //board[7][1] = new Piece {{0, 1}, Piece::PIECE_WHITE, textures.at("wn")};
     //board[7][6] = new Piece {{0, 6}, Piece::PIECE_WHITE, textures.at("wn")};
@@ -143,19 +144,15 @@ void Game::DoMove(const Position& move) {
 }
 
 void Game::RenderBackground() {
-    // TODO: Fazer com que seja estático e constante.
-    Color lightColor = Color{235, 236, 208, 255};
-    Color darkColor = Color{119, 149, 86, 255};
-
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             int x = j * Game::CELL_SIZE;
             int y = i * Game::CELL_SIZE;
 
             int startingColorInRow = i % 2 == 0 ? 0 : 1;
-            int colorIndex = (j + startingColorInRow) % 2;
+            int colorIndex = (startingColorInRow + j) % 2;
 
-            Color color = colorIndex == 0 ? lightColor : darkColor;
+            Color color = colorIndex == 0 ? LIGHT_COLOR : DARK_COLOR;
 
             DrawRectangle(x, y, Game::CELL_SIZE, Game::CELL_SIZE, color);
         }

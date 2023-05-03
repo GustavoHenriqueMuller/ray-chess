@@ -81,6 +81,14 @@ build CMakeFiles/ray_chess.dir/src/Board.cpp.obj: CXX_COMPILER__ray_chess_Debug 
   OBJECT_DIR = CMakeFiles\ray_chess.dir
   OBJECT_FILE_DIR = CMakeFiles\ray_chess.dir\src
 
+build CMakeFiles/ray_chess.dir/src/pieces/Rook.cpp.obj: CXX_COMPILER__ray_chess_Debug E$:/repos/ray-chess/src/pieces/Rook.cpp || cmake_object_order_depends_target_ray_chess
+  DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
+  DEP_FILE = CMakeFiles\ray_chess.dir\src\pieces\Rook.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -IE:/repos/ray-chess/cmake-build-debug/_deps/raylib-src/src -IE:/repos/ray-chess/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
+  OBJECT_DIR = CMakeFiles\ray_chess.dir
+  OBJECT_FILE_DIR = CMakeFiles\ray_chess.dir\src\pieces
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target ray_chess
@@ -89,7 +97,7 @@ build CMakeFiles/ray_chess.dir/src/Board.cpp.obj: CXX_COMPILER__ray_chess_Debug 
 #############################################
 # Link the executable ray_chess.exe
 
-build ray_chess.exe: CXX_EXECUTABLE_LINKER__ray_chess_Debug CMakeFiles/ray_chess.dir/src/Main.cpp.obj CMakeFiles/ray_chess.dir/src/Game.cpp.obj CMakeFiles/ray_chess.dir/src/pieces/Peon.cpp.obj CMakeFiles/ray_chess.dir/src/Board.cpp.obj | _deps/raylib-build/raylib/libraylib.a _deps/raylib-build/raylib/external/glfw/src/libglfw3.a || _deps/raylib-build/raylib/external/glfw/src/libglfw3.a _deps/raylib-build/raylib/libraylib.a
+build ray_chess.exe: CXX_EXECUTABLE_LINKER__ray_chess_Debug CMakeFiles/ray_chess.dir/src/Main.cpp.obj CMakeFiles/ray_chess.dir/src/Game.cpp.obj CMakeFiles/ray_chess.dir/src/pieces/Peon.cpp.obj CMakeFiles/ray_chess.dir/src/Board.cpp.obj CMakeFiles/ray_chess.dir/src/pieces/Rook.cpp.obj | _deps/raylib-build/raylib/libraylib.a _deps/raylib-build/raylib/external/glfw/src/libglfw3.a || _deps/raylib-build/raylib/external/glfw/src/libglfw3.a _deps/raylib-build/raylib/libraylib.a
   FLAGS = -g
   LINK_LIBRARIES = _deps/raylib-build/raylib/libraylib.a  -lopengl32  -lglu32  -lwinmm  _deps/raylib-build/raylib/external/glfw/src/libglfw3.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\ray_chess.dir

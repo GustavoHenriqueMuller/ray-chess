@@ -10,6 +10,8 @@
 
 class Game {
 public:
+    constexpr static Color LIGHT_COLOR = Color{235, 236, 208, 255};
+    constexpr static Color DARK_COLOR = Color{119, 149, 86, 255};
     const static int WINDOW_WIDTH = 640;
     const static int WINDOW_HEIGHT = 640;
     const static int CELL_SIZE = 640 / 8;

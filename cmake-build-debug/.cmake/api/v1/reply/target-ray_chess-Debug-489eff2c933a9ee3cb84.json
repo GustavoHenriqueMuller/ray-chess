@@ -94,7 +94,8 @@
 				0,
 				1,
 				5,
-				8
+				8,
+				9
 			]
 		}
 	],
@@ -170,7 +171,8 @@
 				0,
 				1,
 				5,
-				8
+				8,
+				9
 			]
 		},
 		{
@@ -181,7 +183,8 @@
 				3,
 				4,
 				6,
-				7
+				7,
+				10
 			]
 		}
 	],
@@ -235,6 +238,17 @@
 			"compileGroupIndex" : 0,
 			"path" : "src/Board.cpp",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/pieces/Rook.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/pieces/Rook.h",
+			"sourceGroupIndex" : 1
 		}
 	],
 	"type" : "EXECUTABLE"
