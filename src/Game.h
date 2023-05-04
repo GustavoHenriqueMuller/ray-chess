@@ -26,7 +26,7 @@ private:
     void LoadTextures();
     void InitBoard();
     void HandleInput();
-    bool IsValidMove(const Position& move);
+    bool IsPossibleMove(const Position& move);
     void DoMove(const Position& move);
 
     void RenderBackground();

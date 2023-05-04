@@ -32,3 +32,7 @@ void Board::Destroy(const Position& position) {
     delete pieces[position.i][position.j]; // @TODO: VER
     pieces[position.i][position.j] = nullptr;
 }
+
+bool Board::IsPositionWithinBoundaries(const Position &position) const {
+    return position.j >= 0 && position.j < 8 && position.i >= 0 && position.i < 8;
+}

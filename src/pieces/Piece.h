@@ -21,13 +21,13 @@ public:
     virtual void Move(const Position& move) = 0;
     virtual std::vector<Position> GetPossibleMoves(const Board& board) = 0;
 
-    Position GetPosition() { return position; }
+    Position GetPosition();
 
-    TYPE type;
+    const TYPE type;
     const Texture& texture;
 
 protected:
-    Position position;
+    Position position; // TODO: TALVEZ TIRAR A POSIÇÃO?
     bool hasMoved = false;
 };
 

@@ -13,6 +13,7 @@ public:
     Piece* At(const Position& position) const;
     void Set(const Position& position, Piece* piece);
     void Destroy(const Position &position);
+    bool IsPositionWithinBoundaries(const Position& position) const;
 
 private:
     Piece* pieces[8][8];

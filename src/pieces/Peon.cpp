@@ -1,6 +1,7 @@
 #include "Peon.h"
 
 // TODO: EN PASSANT
+// TODO: PROMOTION
 
 void Peon::Move(const Position &move) {
     hasMoved = true;
@@ -20,7 +21,7 @@ std::vector<Position> Peon::GetPossibleMoves(const Board& board) {
     // Check for moving two cells, if the peon has not been moved.
     Position twoCellMove = {position.i + (type == TYPE::TYPE_BLACK ? +2 : -2), position.j};
 
-    if (!board.At(twoCellMove) && !this->hasMoved) {
+    if (!board.At(baseMove) && !board.At(twoCellMove) && !this->hasMoved) {
         moves.push_back(twoCellMove);
     }
 

@@ -4,6 +4,8 @@
 
 #include "pieces/Peon.h"
 #include "pieces/Rook.h"
+#include "pieces/Knight.h"
+#include "pieces/Bishop.h"
 
 #include <filesystem>
 #include <iostream>
@@ -44,11 +46,11 @@ void Game::InitBoard() {
     board.Set({0, 0}, new Rook({0, 0}, Piece::TYPE::TYPE_BLACK, textures.at("br")));
     board.Set({0, 7}, new Rook({0, 7}, Piece::TYPE::TYPE_BLACK, textures.at("br")));
 
-    //board[0][1] = new Piece {{0, 1}, PIECE_COLOR::::PIECE_BLACK, textures.at("bn")};
-    //board[0][6] = new Piece {{0, 6}, PIECE_COLOR::::PIECE_BLACK, textures.at("bn")};
+    board.Set({0, 1}, new Knight({0, 1}, Piece::TYPE::TYPE_BLACK, textures.at("bn")));
+    board.Set({0, 6}, new Knight({0, 6}, Piece::TYPE::TYPE_BLACK, textures.at("bn")));
 
-    //board[0][2] = new Piece {{0, 2}, PIECE_COLOR::::PIECE_BLACK, textures.at("bb")};
-    //board[0][5] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_BLACK, textures.at("bb")};
+    board.Set({0, 2}, new Bishop({0, 2}, Piece::TYPE::TYPE_BLACK, textures.at("bb")));
+    board.Set({0, 5}, new Bishop({0, 2}, Piece::TYPE::TYPE_BLACK, textures.at("bb")));
 
     //board[0][3] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_BLACK, textures.at("bq")};
     //board[0][4] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_BLACK, textures.at("bk")};
@@ -58,14 +60,14 @@ void Game::InitBoard() {
         board.Set({6, j}, new Peon({6, j}, Piece::TYPE::TYPE_WHITE, textures.at("wp")));
     }
 
-    board.Set({7, 0}, new Rook({0, 0}, Piece::TYPE::TYPE_WHITE, textures.at("wr")));
-    board.Set({7, 7}, new Rook({0, 7}, Piece::TYPE::TYPE_WHITE, textures.at("wr")));
+    board.Set({7, 0}, new Rook({7, 0}, Piece::TYPE::TYPE_WHITE, textures.at("wr")));
+    board.Set({7, 7}, new Rook({7, 7}, Piece::TYPE::TYPE_WHITE, textures.at("wr")));
 
-    //board[7][1] = new Piece {{0, 1}, PIECE_COLOR::::PIECE_WHITE, textures.at("wn")};
-    //board[7][6] = new Piece {{0, 6}, PIECE_COLOR::::PIECE_WHITE, textures.at("wn")};
+    board.Set({7, 1}, new Knight({7, 1}, Piece::TYPE::TYPE_WHITE, textures.at("wn")));
+    board.Set({7, 6}, new Knight({7, 6}, Piece::TYPE::TYPE_WHITE, textures.at("wn")));
 
-    //board[7][2] = new Piece {{0, 2}, PIECE_COLOR::::PIECE_WHITE, textures.at("wb")};
-    //board[7][5] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_WHITE, textures.at("wb")};
+    board.Set({7, 2}, new Bishop({7, 2}, Piece::TYPE::TYPE_WHITE, textures.at("wb")));
+    board.Set({7, 5}, new Bishop({7, 5}, Piece::TYPE::TYPE_WHITE, textures.at("wb")));
 
     //board[7][3] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_WHITE, textures.at("wq")};
     //board[7][4] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_WHITE, textures.at("wk")};
@@ -108,7 +110,7 @@ void Game::HandleInput() {
             possibleMoves = selectedPiece->GetPossibleMoves(board);
         } else {
             // Do movement.
-            if (selectedPiece != nullptr && IsValidMove(clickedPosition)) {
+            if (selectedPiece != nullptr && IsPossibleMove(clickedPosition)) {
                 DoMove(clickedPosition);
             }
             
@@ -118,7 +120,7 @@ void Game::HandleInput() {
     }
 }
 
-bool Game::IsValidMove(const Position& move) {
+bool Game::IsPossibleMove(const Position& move) {
     for (const Position& possibleMove : possibleMoves) {
         if (move.i == possibleMove.i && move.j == possibleMove.j) {
             return true;
@@ -131,6 +133,7 @@ bool Game::IsValidMove(const Position& move) {
 void Game::DoMove(const Position& move) {
     // Delete piece, if any.
     if (board.At(move) && board.At(move)->type != selectedPiece->type) {
+        // TODO: CHECAR POR REI, CHEQUE, ETC
         board.Destroy(move);
     }
 
@@ -212,7 +215,7 @@ void Game::RenderGuideText() {
         int y = i * CELL_SIZE + padding;
 
         char text[2];
-        text[0] = i + 48 + 1;
+        text[0] = 49 + i;
         text[1] = 0;
 
         DrawText(text, x, y, 20, textColor);
@@ -227,7 +230,7 @@ void Game::RenderGuideText() {
         int y = WINDOW_HEIGHT - characterSize * 1.75 - padding;
 
         char text[2];
-        text[0] = (7 - j) + 97;
+        text[0] = 97 + (7 - j);
         text[1] = 0;
 
         DrawText(text, x, y, 20, textColor);
