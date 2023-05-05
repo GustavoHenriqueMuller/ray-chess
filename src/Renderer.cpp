@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "Game.h"
 
+#include <iostream>
+
 void Renderer::RenderBackground() {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -75,11 +77,8 @@ void Renderer::RenderGuideText() {
 }
 
 void Renderer::RenderPromotionScreen(const std::map<std::string, Texture>& textures, Piece::COLOR colorOfPeon) {
-    const char* textPromotion = "Promotion";
-    int textPromotionLength = MeasureText(textPromotion, 40);
-
     DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, Color{0, 0, 0, 127});
-    DrawText(textPromotion, Game::WINDOW_WIDTH / 2 - textPromotionLength / 2, Game::WINDOW_HEIGHT / 4, 40, WHITE);
+    DrawText("Promotion", Game::WINDOW_WIDTH / 2 - 98, Game::WINDOW_HEIGHT / 4, 40, WHITE);
 
     std::string prefix = colorOfPeon == Piece::COLOR::C_WHITE ? "w" : "b";
 
