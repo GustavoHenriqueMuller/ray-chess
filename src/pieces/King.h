@@ -8,6 +8,9 @@ class King : public Piece {
 public:
     King(Position position, COLOR color, const Texture& texture): Piece(position, color, Piece::TYPE::KING, texture) {}
     std::vector<Move> GetPossibleMoves(const Board& board) override;
+
+private:
+    bool CheckCastling(const Board& board, const Position& position);
 };
 
 #endif //RAY_CHESS_KING_H

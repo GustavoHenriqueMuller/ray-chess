@@ -31,7 +31,10 @@ public:
     virtual void DoMove(const Move& move);
     virtual std::vector<Move> GetPossibleMoves(const Board& board) = 0;
 
+    static Piece::COLOR GetInverseColor(Piece::COLOR color);
+
     Position GetPosition();
+    bool HasMoved();
 
     const COLOR color;
     const TYPE type;

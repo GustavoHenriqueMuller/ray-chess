@@ -27,16 +27,11 @@ private:
     void LoadTextures();
     void HandleInput();
     Move* GetMoveAtPosition(const Position& position);
+
     void DoMove(const Move& move);
-
-    void RenderBackground();
-    void RenderPieces();
-    void RenderMovesSelectedPiece();
-    void RenderGuideText();
-
-    Color GetShadeColor(Piece::COLOR color);
-    Piece::COLOR GetColorOfCell(const Position& cellPosition);
-    Piece::COLOR GetInverseColor(Piece::COLOR color);
+    void DoShortCastling(const Move& move);
+    void DoLongCastling(const Move& move);
+    void MovePiece(Piece* piece, const Move& move);
 
     Board board;
     std::map<std::string, Texture> textures;

@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Position.h"
 #include "raylib.h"
+#include "Renderer.h"
 
 #include <filesystem>
 #include <iostream>
@@ -48,12 +49,7 @@ void Game::Run() {
         HandleInput();
 
         // Render.
-        BeginDrawing();
-            RenderBackground();
-            RenderPieces();
-            RenderMovesSelectedPiece();
-            RenderGuideText();
-        EndDrawing();
+        Renderer::RenderAll(board, possibleMoves);
     }
 }
 
@@ -66,6 +62,20 @@ void Game::HandleInput() {
 
         // Select piece.
         if (clickedPiece != nullptr && clickedPiece->color == turn) {
+            // If king, check for castling.
+            /*if (selectedPiece && selectedPiece->type == Piece::TYPE::KING) {
+                Move* move = GetMoveAtPosition(clickedPosition);
+
+                if (move && (move->type == Move::TYPE::LONG_CASTLING || move->type == Move::TYPE::SHORT_CASTLING)) {
+                    // Perform castling.
+                    DoMove(*move);
+
+                    selectedPiece = nullptr;
+                    possibleMoves.clear();
+                    return;
+                }
+            }*/
+
             selectedPiece = clickedPiece;
             possibleMoves = selectedPiece->GetPossibleMoves(board);
         } else {
@@ -92,116 +102,52 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     return nullptr;
 }
 
+// TODO: CHECAR POR REI, CHEQUE, ETC
+// TODO: CHECAR SE NÃO VAI DEIXAR O REI EM CHEQUE
+
 void Game::DoMove(const Move& move) {
-    // Delete piece, if any.
+    // Delete piece, if attack or en passant.
     if (move.type == Move::TYPE::ATTACK) {
-        // TODO: CHECAR POR REI, CHEQUE, ETC
         board.Destroy(move.position);
     } else if (move.type == Move::TYPE::EN_PASSANT) {
-        // TODO: CHECAR POR REI, CHEQUE, ETC
         board.Destroy({selectedPiece->GetPosition().i, move.position.j});
     }
 
-    // Swap positions.
-    // TODO: CHECAR SE NÃO VAI DEIXAR O REI EM CHEQUE
-
-    board.Set(move.position, selectedPiece);
-    board.Set(selectedPiece->GetPosition(), nullptr);
-    selectedPiece->DoMove(move);
+    // Move piece. In case of castling, also move rook.
+    if (move.type == Move::TYPE::SHORT_CASTLING) {
+        DoShortCastling(move);
+    } else if (move.type == Move::TYPE::LONG_CASTLING) {
+        DoLongCastling(move);
+    } else {
+        // Swap positions.
+        MovePiece(selectedPiece, move);
+    }
 
     // Swap turns.
-    this->turn = GetInverseColor(this->turn);
+    this->turn = Piece::GetInverseColor(this->turn);
 }
 
-void Game::RenderBackground() {
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            int x = j * Game::CELL_SIZE;
-            int y = i * Game::CELL_SIZE;
+void Game::DoShortCastling(const Move& move) {
+    Piece* rook = board.At({selectedPiece->GetPosition().i, 7});
 
-            Color cellColor = GetShadeColor(GetColorOfCell({i, j}));
-            DrawRectangle(x, y, Game::CELL_SIZE, Game::CELL_SIZE, cellColor);
-        }
-    }
+    MovePiece(selectedPiece, move);
+    MovePiece(rook, {Move::TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j - 2});
 }
 
-Color Game::GetShadeColor(Piece::COLOR color) {
-    return color == Piece::COLOR::C_WHITE ? LIGHT_SHADE : DARK_SHADE;
+void Game::DoLongCastling(const Move& move) {
+    Piece* rook = board.At({selectedPiece->GetPosition().i, 0});
+
+    MovePiece(selectedPiece, move);
+    MovePiece(rook, {Move::TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
 }
 
-Piece::COLOR Game::GetColorOfCell(const Position& cellPosition) {
-    int startingColorInRow = cellPosition.i % 2 == 0 ? 0 : 1;
-    int colorIndex = (startingColorInRow + cellPosition.j) % 2;
-
-    return colorIndex == 0 ? Piece::COLOR::C_WHITE : Piece::COLOR::C_BLACK;
+void Game::MovePiece(Piece* piece, const Move& move) {
+    // Swap positions of piece.
+    board.Set(move.position, piece);
+    board.Set(piece->GetPosition(), nullptr);
+    piece->DoMove(move);
 }
 
-Piece::COLOR Game::GetInverseColor(Piece::COLOR color) {
-    return color == Piece::COLOR::C_WHITE ? Piece::COLOR::C_BLACK : Piece::COLOR::C_WHITE;
-}
-
-void Game::RenderPieces() {
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            Piece* piece = board.At({i, j});
-
-            if (piece != nullptr) {
-                int x = j * CELL_SIZE;
-                int y = i * CELL_SIZE;
-
-                DrawTexture(piece->texture, x, y, WHITE);
-            }
-        }
-    }
-}
-
-void Game::RenderMovesSelectedPiece() {
-    for (const Move& move : possibleMoves) {
-        int radius = 17;
-
-        DrawCircle(
-            move.position.j * CELL_SIZE + CELL_SIZE / 2,
-            move.position.i * CELL_SIZE + CELL_SIZE / 2,
-            radius,
-            Color{0, 0, 0, 127}
-        );
-    }
-}
-
-void Game::RenderGuideText() {
-    int padding = 3;
-    int characterSize = 10;
-
-    // Render 1-8 numbers (rows).
-    for (int i = 0; i < 8; i++) {
-        Color textColor = GetShadeColor(GetInverseColor(GetColorOfCell({i, 0})));
-
-        // Render text.
-        int x = padding;
-        int y = i * CELL_SIZE + padding;
-
-        char text[2];
-        text[0] = 49 + i;
-        text[1] = 0;
-
-        DrawText(text, x, y, 20, textColor);
-    }
-
-    // Render h-a characters (columns).
-    for (int j = 0; j < 8; j++) {
-        Color textColor = GetShadeColor(GetInverseColor(GetColorOfCell({7, j})));
-
-        // Render text.
-        int x = (j + 1) * CELL_SIZE - characterSize - padding;
-        int y = WINDOW_HEIGHT - characterSize * 1.75 - padding;
-
-        char text[2];
-        text[0] = 97 + (7 - j);
-        text[1] = 0;
-
-        DrawText(text, x, y, 20, textColor);
-    }
-}
 
 
 

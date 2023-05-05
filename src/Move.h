@@ -8,7 +8,8 @@ struct Move {
         WALK,
         DOUBLE_WALK,
         ATTACK,
-        CASTLING,
+        SHORT_CASTLING,
+        LONG_CASTLING,
         EN_PASSANT,
         PROMOTION
     };
