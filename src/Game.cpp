@@ -117,6 +117,7 @@ void Game::HandlePromotionInput() {
         if (clickedPosition.i == 3 && clickedPosition.j >= 2 && clickedPosition.j <= 5) {
             Piece* newPiece;
 
+            // TODO: CONSERTAR AQUI, NÃO PODE CRIAR RAINHA COM WQ, TEM QUE SER GENÉRICO
             if (clickedPosition.j == 2) { // Clicked queen.
                 newPiece = new Queen(selectedPiece->GetPosition(), selectedPiece->color, textures["wq"]);
             } else if (clickedPosition.j == 3) { // Clicked rook.
@@ -155,23 +156,25 @@ void Game::ChangeMouseCursor() {
     Vector2 mousePosition = GetMousePosition();
     Position hoverPosition = {int(mousePosition.y) / CELL_SIZE, int(mousePosition.x) / CELL_SIZE};
 
-    bool isHoveringOverPiece = board.At(hoverPosition) && board.At(hoverPosition)->color == turn;
-    auto it = std::find_if(possibleMoves.begin(), possibleMoves.end(), [hoverPosition](const Move& m) {
-        return m.position.i == hoverPosition.i && m.position.j == hoverPosition.j;
-    });
+    if (!inPromotion) {
+        bool isHoveringOverPiece = board.At(hoverPosition) && board.At(hoverPosition)->color == turn;
+        auto it = std::find_if(possibleMoves.begin(), possibleMoves.end(), [hoverPosition](const Move& m) {
+            return m.position.i == hoverPosition.i && m.position.j == hoverPosition.j;
+        });
 
-    bool isHoveringOverMove = it != possibleMoves.end();
+        bool isHoveringOverMove = it != possibleMoves.end();
 
-    // Set mouse to pointer if hovering over piece or hovering over move.
-    if (isHoveringOverPiece || isHoveringOverMove) {
-        SetMouseCursor(4);
+        // Set mouse to pointer if hovering over piece or hovering over move.
+        if (isHoveringOverPiece || isHoveringOverMove) {
+            SetMouseCursor(4);
+        } else {
+            SetMouseCursor(0);
+        }
     } else {
-        SetMouseCursor(0);
-    }
-
-    // If in promotion screen, also set mouse to pointer if hovering over the options.
-    if (inPromotion && (hoverPosition.i == 3 && hoverPosition.j >= 2 && hoverPosition.j <= 5)) {
-        SetMouseCursor(4);
+        // If in promotion screen, also set mouse to pointer if hovering over the options.
+        if (hoverPosition.i == 3 && hoverPosition.j >= 2 && hoverPosition.j <= 5) {
+            SetMouseCursor(4);
+        }
     }
 }
 
