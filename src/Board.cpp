@@ -35,7 +35,7 @@ void Board::Init(const std::map<std::string, Texture>& textures) {
     Set({0, 6}, new Knight({0, 6}, Piece::COLOR::C_BLACK, textures.at("bn")));
 
     Set({0, 2}, new Bishop({0, 2}, Piece::COLOR::C_BLACK, textures.at("bb")));
-    Set({0, 5}, new Bishop({0, 2}, Piece::COLOR::C_BLACK, textures.at("bb")));
+    Set({0, 5}, new Bishop({0, 5}, Piece::COLOR::C_BLACK, textures.at("bb")));
 
     Set({0, 3}, new Queen({0, 3}, Piece::COLOR::C_BLACK, textures.at("bq")));
     Set({0, 4}, new King({0, 4}, Piece::COLOR::C_BLACK, textures.at("bk")));

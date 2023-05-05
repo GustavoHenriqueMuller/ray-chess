@@ -1,15 +1,6 @@
 #include "Renderer.h"
 #include "Game.h"
 
-void Renderer::RenderAll(const Board& board, const std::vector<Move>& possibleMoves) {
-    BeginDrawing();
-        RenderBackground();
-        RenderPieces(board);
-        RenderMovesSelectedPiece(possibleMoves);
-        RenderGuideText();
-    EndDrawing();
-}
-
 void Renderer::RenderBackground() {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -85,6 +76,36 @@ void Renderer::RenderGuideText() {
     }
 }
 
+void Renderer::RenderPromotionScreen(const std::map<std::string, Texture>& textures, Piece::COLOR colorOfPeon) {
+    DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, Color{0, 0, 0, 127});
+
+    std::string prefix = colorOfPeon == Piece::COLOR::C_WHITE ? "w" : "b";
+
+    // Draw queen.
+    {
+        DrawTexture(textures.at(prefix + "q"), Game::CELL_SIZE * 2, Game::CELL_SIZE * 3, WHITE);
+        DrawText("Queen", Game::CELL_SIZE * 2 + 9, Game::CELL_SIZE * 4 + 5, 20, WHITE);
+    }
+
+    // Draw rook.
+    {
+        DrawTexture(textures.at(prefix + "r"), Game::CELL_SIZE * 3, Game::CELL_SIZE * 3, WHITE);
+        DrawText("Rook", Game::CELL_SIZE * 3 + 14, Game::CELL_SIZE * 4 + 5, 20, WHITE);
+    }
+
+    // Draw bishop.
+    {
+        DrawTexture(textures.at(prefix + "b"), Game::CELL_SIZE * 4, Game::CELL_SIZE * 3, WHITE);
+        DrawText("Bishop", Game::CELL_SIZE * 4 + 7, Game::CELL_SIZE * 4 + 5, 20, WHITE);
+    }
+
+    // Draw knight.
+    {
+        DrawTexture(textures.at(prefix + "n"), Game::CELL_SIZE * 5, Game::CELL_SIZE * 3, WHITE);
+        DrawText("Knight", Game::CELL_SIZE * 5 + 9, Game::CELL_SIZE * 4 + 5, 20, WHITE);
+    }
+}
+
 Color Renderer::GetShadeColor(Piece::COLOR color) {
     return color == Piece::COLOR::C_WHITE ? Game::LIGHT_SHADE : Game::DARK_SHADE;
 }
@@ -95,7 +116,6 @@ Piece::COLOR Renderer::GetColorOfCell(const Position& cellPosition) {
 
     return colorIndex == 0 ? Piece::COLOR::C_WHITE : Piece::COLOR::C_BLACK;
 }
-
 
 
 

@@ -2,9 +2,17 @@
 #include "Position.h"
 #include "raylib.h"
 #include "Renderer.h"
+#include "pieces/Queen.h"
+#include "pieces/Knight.h"
+#include "pieces/Bishop.h"
+#include "pieces/Rook.h"
 
 #include <filesystem>
 #include <iostream>
+
+const std::string Game::ASSETS_PATH = "../assets";
+const Color Game::LIGHT_SHADE = Color{235, 236, 208, 255};
+const Color Game::DARK_SHADE = Color{119, 149, 86, 255};
 
 Game::Game() {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RayChess");
@@ -15,9 +23,7 @@ Game::Game() {
 }
 
 void Game::LoadTextures() {
-    std::string assetsPath = "../assets";
-
-    for (const auto & entry : std::filesystem::directory_iterator(assetsPath)) {
+    for (const auto & entry : std::filesystem::directory_iterator(ASSETS_PATH)) {
         // Load and resize image.
         Image image = LoadImage(entry.path().string().c_str());
         ImageResize(&image, CELL_SIZE, CELL_SIZE);
@@ -46,11 +52,28 @@ Game::~Game() {
 void Game::Run() {
     while (!WindowShouldClose()){
         // Input.
-        HandleInput();
+        inPromotion ? HandlePromotionInput() : HandleInput();
 
         // Render.
-        Renderer::RenderAll(board, possibleMoves);
+        BeginDrawing();
+            Renderer::RenderBackground();
+            Renderer::RenderPieces(board);
+
+            if (!inPromotion) {
+                Renderer::RenderMovesSelectedPiece(possibleMoves);
+            }
+
+            Renderer::RenderGuideText();
+
+            if (inPromotion) {
+                Renderer::RenderPromotionScreen(textures, selectedPiece->color);
+            }
+        EndDrawing();
     }
+}
+
+void Game::SwapTurns() {
+    this->turn = Piece::GetInverseColor(this->turn);
 }
 
 void Game::HandleInput() {
@@ -62,32 +85,54 @@ void Game::HandleInput() {
 
         // Select piece.
         if (clickedPiece != nullptr && clickedPiece->color == turn) {
-            // If king, check for castling.
-            /*if (selectedPiece && selectedPiece->type == Piece::TYPE::KING) {
-                Move* move = GetMoveAtPosition(clickedPosition);
-
-                if (move && (move->type == Move::TYPE::LONG_CASTLING || move->type == Move::TYPE::SHORT_CASTLING)) {
-                    // Perform castling.
-                    DoMove(*move);
-
-                    selectedPiece = nullptr;
-                    possibleMoves.clear();
-                    return;
-                }
-            }*/
-
             selectedPiece = clickedPiece;
             possibleMoves = selectedPiece->GetPossibleMoves(board);
         } else {
             // Do movement.
             Move* desiredMove = GetMoveAtPosition(clickedPosition);
 
-            if (selectedPiece != nullptr && desiredMove) {
+            if (desiredMove && selectedPiece != nullptr) {
                 DoMove(*desiredMove);
             }
-            
+
+            // Piece must still be select to render promotion screen.
+            if (!desiredMove || desiredMove->type != Move::TYPE::PROMOTION) {
+                selectedPiece = nullptr;
+                possibleMoves.clear();
+            }
+        }
+    }
+}
+
+void Game::HandlePromotionInput() {
+    if (IsMouseButtonPressed(0)) {
+        Vector2 mousePosition = GetMousePosition();
+
+        Position clickedPosition = {int(mousePosition.y) / CELL_SIZE, int(mousePosition.x) / CELL_SIZE};
+
+        if (clickedPosition.i == 3 && clickedPosition.j >= 2 && clickedPosition.j <= 5) {
+            Piece* newPiece;
+
+            if (clickedPosition.j == 2) { // Clicked queen.
+                newPiece = new Queen(selectedPiece->GetPosition(), selectedPiece->color, textures["wq"]);
+            } else if (clickedPosition.j == 3) { // Clicked rook.
+                newPiece = new Rook(selectedPiece->GetPosition(), selectedPiece->color, textures["wr"]);
+            } else if (clickedPosition.j == 4) { // Clicked bishop.
+                newPiece = new Bishop(selectedPiece->GetPosition(), selectedPiece->color, textures["wb"]);
+            } else if (clickedPosition.j == 5) { // Clicked knight.
+                newPiece = new Knight(selectedPiece->GetPosition(), selectedPiece->color, textures["wn"]);
+            }
+
+            // Destroy peon, create new piece at same position.
+            board.Destroy(selectedPiece->GetPosition());
+            board.Set(newPiece->GetPosition(), newPiece);
+
+            // Quit promotion, deselect piece and swap turns.
+            inPromotion = false;
             selectedPiece = nullptr;
             possibleMoves.clear();
+
+            SwapTurns();
         }
     }
 }
@@ -113,18 +158,24 @@ void Game::DoMove(const Move& move) {
         board.Destroy({selectedPiece->GetPosition().i, move.position.j});
     }
 
-    // Move piece. In case of castling, also move rook.
-    if (move.type == Move::TYPE::SHORT_CASTLING) {
-        DoShortCastling(move);
-    } else if (move.type == Move::TYPE::LONG_CASTLING) {
-        DoLongCastling(move);
-    } else {
-        // Swap positions.
+    // In case of promotion, show promotion dialog and stop game.
+    if (move.type == Move::TYPE::PROMOTION) {
         MovePiece(selectedPiece, move);
-    }
+        inPromotion = true;
+    } else {
+        // Move piece. In case of castling, also move rook.
+        if (move.type == Move::TYPE::SHORT_CASTLING) {
+            DoShortCastling(move);
+        } else if (move.type == Move::TYPE::LONG_CASTLING) {
+            DoLongCastling(move);
+        } else {
+            // Swap positions.
+            MovePiece(selectedPiece, move);
+        }
 
-    // Swap turns.
-    this->turn = Piece::GetInverseColor(this->turn);
+        // Swap turns.
+        SwapTurns();
+    }
 }
 
 void Game::DoShortCastling(const Move& move) {
@@ -147,6 +198,8 @@ void Game::MovePiece(Piece* piece, const Move& move) {
     board.Set(piece->GetPosition(), nullptr);
     piece->DoMove(move);
 }
+
+
 
 
 

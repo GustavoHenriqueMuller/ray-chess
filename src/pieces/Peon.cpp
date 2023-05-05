@@ -1,7 +1,5 @@
 #include "Peon.h"
 
-// TODO: PROMOTION
-
 void Peon::DoMove(const Move &move) {
     if (move.type == Move::TYPE::DOUBLE_WALK) {
         hasOnlyMadeDoubleWalk = true;
@@ -19,7 +17,12 @@ std::vector<Move> Peon::GetPossibleMoves(const Board& board) {
     Position walk = {position.i + (color == COLOR::C_BLACK ? +1 : -1), position.j};
 
     if (!board.At(walk)) {
-        moves.push_back({Move::TYPE::WALK, walk});
+        // Check for promotion if on first row and white, or last row and black.
+        if ((walk.i == 0 && color == Piece::COLOR::C_WHITE) || walk.i == 7 && color == Piece::COLOR::C_BLACK) {
+            moves.push_back({Move::TYPE::PROMOTION, walk});
+        } else {
+            moves.push_back({Move::TYPE::WALK, walk});
+        }
     }
 
     // Check for moving two cells, if the peon has not been moved.

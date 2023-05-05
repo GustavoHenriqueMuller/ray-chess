@@ -14,18 +14,21 @@ public:
     const static int WINDOW_WIDTH = 640;
     const static int WINDOW_HEIGHT = 640;
     const static int CELL_SIZE = 640 / 8;
+    const static std::string ASSETS_PATH;
 
-    constexpr static Color LIGHT_SHADE = Color{235, 236, 208, 255};
-    constexpr static Color DARK_SHADE = Color{119, 149, 86, 255};
+    const static Color LIGHT_SHADE;
+    const static Color DARK_SHADE;
 
     Game();
     ~Game();
 
     void Run();
+    void SwapTurns();
 
 private:
     void LoadTextures();
     void HandleInput();
+    void HandlePromotionInput();
     Move* GetMoveAtPosition(const Position& position);
 
     void DoMove(const Move& move);
@@ -39,6 +42,8 @@ private:
     Piece::COLOR turn = Piece::COLOR::C_WHITE;
     Piece* selectedPiece = nullptr;
     std::vector<Move> possibleMoves;
+
+    bool inPromotion = false;
 };
 
 #endif //RAY_CHESS_GAME_H
