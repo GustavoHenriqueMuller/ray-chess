@@ -28,15 +28,13 @@ void Renderer::RenderPieces(const Board& board) {
     }
 }
 
-void Renderer::RenderMovesSelectedPiece(const std::vector<Move>& possibleMoves) {
+void Renderer::RenderMovesSelectedPiece(const std::map<std::string, Texture>& textures, const std::vector<Move>& possibleMoves) {
     for (const Move& move : possibleMoves) {
-        int radius = 17;
-
-        DrawCircle(
-                move.position.j * Game::CELL_SIZE + Game::CELL_SIZE / 2,
-                move.position.i * Game::CELL_SIZE + Game::CELL_SIZE / 2,
-                radius,
-                Color{0, 0, 0, 127}
+        DrawTexture(
+            textures.at(GetTextureNameFromMoveType(move.type)),
+            move.position.j * Game::CELL_SIZE,
+            move.position.i * Game::CELL_SIZE,
+            WHITE
         );
     }
 }
@@ -103,6 +101,25 @@ void Renderer::RenderPromotionScreen(const std::map<std::string, Texture>& textu
     {
         DrawTexture(textures.at(prefix + "n"), Game::CELL_SIZE * 5, Game::CELL_SIZE * 3, WHITE);
         DrawText("Knight", Game::CELL_SIZE * 5 + 9, Game::CELL_SIZE * 4 + 5, 20, WHITE);
+    }
+}
+
+std::string Renderer::GetTextureNameFromMoveType(Move::TYPE moveType) {
+    switch (moveType) {
+        case Move::TYPE::WALK:
+        case Move::TYPE::DOUBLE_WALK:
+        case Move::TYPE::ATTACK:
+            return "move";
+
+        case Move::TYPE::SHORT_CASTLING:
+        case Move::TYPE::LONG_CASTLING:
+            return "castling";
+
+        case Move::TYPE::EN_PASSANT:
+            return "enpassant";
+
+        case Move::TYPE::PROMOTION:
+            return "promotion";
     }
 }
 

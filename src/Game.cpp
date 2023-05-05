@@ -31,7 +31,10 @@ void Game::LoadTextures() {
         Texture texture = LoadTextureFromImage(image);
 
         // Add texture to map of textures.
-        std::string fileNameWithoutExtension = entry.path().filename().string().substr(0, 2);
+        std::string fileName = entry.path().filename().string();
+        int dotIndex = fileName.find('.');
+
+        std::string fileNameWithoutExtension = entry.path().filename().string().substr(0, dotIndex);
         textures[fileNameWithoutExtension] = texture;
 
         // Free image data.
@@ -60,7 +63,7 @@ void Game::Run() {
             Renderer::RenderPieces(board);
 
             if (!inPromotion) {
-                Renderer::RenderMovesSelectedPiece(possibleMoves);
+                Renderer::RenderMovesSelectedPiece(textures, possibleMoves);
             }
 
             Renderer::RenderGuideText();
@@ -127,7 +130,7 @@ void Game::HandlePromotionInput() {
             board.Destroy(selectedPiece->GetPosition());
             board.Set(newPiece->GetPosition(), newPiece);
 
-            // Quit promotion, deselect piece and swap turns.
+            // Quit promotion, deselect peon and swap turns.
             inPromotion = false;
             selectedPiece = nullptr;
             possibleMoves.clear();
@@ -146,9 +149,6 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     
     return nullptr;
 }
-
-// TODO: CHECAR POR REI, CHEQUE, ETC
-// TODO: CHECAR SE NÃO VAI DEIXAR O REI EM CHEQUE
 
 void Game::DoMove(const Move& move) {
     // Delete piece, if attack or en passant.

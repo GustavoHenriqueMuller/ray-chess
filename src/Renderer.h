@@ -8,11 +8,12 @@ class Renderer {
 public:
     static void RenderBackground();
     static void RenderPieces(const Board& board);
-    static void RenderMovesSelectedPiece(const std::vector<Move>& possibleMoves);
+    static void RenderMovesSelectedPiece(const std::map<std::string, Texture>& textures, const std::vector<Move>& possibleMoves);
     static void RenderGuideText();
     static void RenderPromotionScreen(const std::map<std::string, Texture>& textures, Piece::COLOR colorOfPeonBeingPromoted);
 
 private:
+    static std::string GetTextureNameFromMoveType(Move::TYPE moveType);
     static Color GetShadeColor(Piece::COLOR color);
     static Piece::COLOR GetColorOfCell(const Position& cellPosition);
 };
