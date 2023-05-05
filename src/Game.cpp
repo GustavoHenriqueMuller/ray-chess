@@ -6,6 +6,7 @@
 #include "pieces/Rook.h"
 #include "pieces/Knight.h"
 #include "pieces/Bishop.h"
+#include "pieces/Queen.h"
 
 #include <filesystem>
 #include <iostream>
@@ -52,7 +53,7 @@ void Game::InitBoard() {
     board.Set({0, 2}, new Bishop({0, 2}, Piece::TYPE::TYPE_BLACK, textures.at("bb")));
     board.Set({0, 5}, new Bishop({0, 2}, Piece::TYPE::TYPE_BLACK, textures.at("bb")));
 
-    //board[0][3] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_BLACK, textures.at("bq")};
+    board.Set({0, 3}, new Queen({0, 2}, Piece::TYPE::TYPE_BLACK, textures.at("bq")));
     //board[0][4] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_BLACK, textures.at("bk")};
 
     // Init white pieces (player).
@@ -69,7 +70,7 @@ void Game::InitBoard() {
     board.Set({7, 2}, new Bishop({7, 2}, Piece::TYPE::TYPE_WHITE, textures.at("wb")));
     board.Set({7, 5}, new Bishop({7, 5}, Piece::TYPE::TYPE_WHITE, textures.at("wb")));
 
-    //board[7][3] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_WHITE, textures.at("wq")};
+    board.Set({7, 3}, new Queen({7, 7}, Piece::TYPE::TYPE_BLACK, textures.at("wq")));
     //board[7][4] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_WHITE, textures.at("wk")};
 }
 
@@ -79,6 +80,7 @@ Game::~Game() {
         UnloadTexture(kv.second);
     }
 
+    board.Clear();
     CloseWindow();
 }
 

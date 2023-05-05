@@ -11,16 +11,12 @@ Board::Board() {
 
 Board::~Board() {
     // Free board.
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            if (pieces[i][j] != nullptr) {
-                delete pieces[i][j]; // @TODO: VER
-            }
-        }
-    }
+    Clear();
 }
 
 Piece* Board::At(const Position& position) const {
+    if (!IsPositionWithinBoundaries(position)) return nullptr;
+
     return pieces[position.i][position.j];
 }
 
@@ -29,8 +25,19 @@ void Board::Set(const Position& position, Piece *piece) {
 }
 
 void Board::Destroy(const Position& position) {
-    delete pieces[position.i][position.j]; // @TODO: VER
-    pieces[position.i][position.j] = nullptr;
+    if (pieces[position.i][position.j]) {
+        delete pieces[position.i][position.j]; // @TODO: VER
+        pieces[position.i][position.j] = nullptr;
+    }
+}
+
+void Board::Clear() {
+    // Free board.
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            Destroy({i, j});
+        }
+    }
 }
 
 bool Board::IsPositionWithinBoundaries(const Position &position) const {
