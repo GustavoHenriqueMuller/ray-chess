@@ -7,6 +7,7 @@
 #include "pieces/Knight.h"
 #include "pieces/Bishop.h"
 #include "pieces/Queen.h"
+#include "pieces/King.h"
 
 #include <filesystem>
 #include <iostream>
@@ -54,7 +55,7 @@ void Game::InitBoard() {
     board.Set({0, 5}, new Bishop({0, 2}, Piece::TYPE::TYPE_BLACK, textures.at("bb")));
 
     board.Set({0, 3}, new Queen({0, 3}, Piece::TYPE::TYPE_BLACK, textures.at("bq")));
-    //board[0][4] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_BLACK, textures.at("bk")};
+    board.Set({0, 4}, new King({0, 4}, Piece::TYPE::TYPE_BLACK, textures.at("bk")));
 
     // Init white pieces (player).
     for (int j = 0; j < 8; j++) {
@@ -71,7 +72,7 @@ void Game::InitBoard() {
     board.Set({7, 5}, new Bishop({7, 5}, Piece::TYPE::TYPE_WHITE, textures.at("wb")));
 
     board.Set({7, 3}, new Queen({7, 3}, Piece::TYPE::TYPE_WHITE, textures.at("wq")));
-    //board[7][4] = new Piece {{0, 3}, PIECE_COLOR::::PIECE_WHITE, textures.at("wk")};
+    board.Set({7, 4}, new King({7, 4}, Piece::TYPE::TYPE_WHITE, textures.at("wk")));
 }
 
 Game::~Game() {
@@ -140,6 +141,8 @@ void Game::DoMove(const Position& move) {
     }
 
     // Swap positions.
+    // TODO: CHECAR SE NÃO VAI DEIXAR O REI EM CHEQUE
+
     board.Set(move, selectedPiece);
     board.Set(selectedPiece->GetPosition(), nullptr);
 
