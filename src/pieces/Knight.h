@@ -7,7 +7,7 @@
 class Knight : public Piece {
 public:
     Knight(Position position, COLOR color, const Texture& texture): Piece(position, color, Piece::TYPE::KNIGHT, texture) {}
-    std::vector<Position> GetPossibleMoves(const Board& board) override;
+    std::vector<Move> GetPossibleMoves(const Board& board) override;
 };
 
 #endif //RAY_CHESS_KNIGHT_H

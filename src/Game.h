@@ -7,6 +7,7 @@
 #include "pieces/Piece.h"
 #include "Board.h"
 #include "raylib.h"
+#include "Move.h"
 
 class Game {
 public:
@@ -25,7 +26,7 @@ public:
 private:
     void LoadTextures();
     void HandleInput();
-    bool IsPossibleMove(const Position& move);
+    bool IsPossibleMovePosition(const Position& move);
     void DoMove(const Position& move);
 
     void RenderBackground();
@@ -42,7 +43,7 @@ private:
 
     Piece::COLOR turn = Piece::COLOR::C_WHITE;
     Piece* selectedPiece = nullptr;
-    std::vector<Position> possibleMoves;
+    std::vector<Move> possibleMoves;
 };
 
 #endif //RAY_CHESS_GAME_H

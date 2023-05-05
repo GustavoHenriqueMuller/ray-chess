@@ -1,7 +1,7 @@
 #include "Knight.h"
 
-std::vector<Position> Knight::GetPossibleMoves(const Board &board) {
-    std::vector<Position> possibleMoves = {
+std::vector<Move> Knight::GetPossibleMoves(const Board &board) {
+    std::vector<Position> possiblePositions = {
         // Up.
         {position.i - 2, position.j - 1},
         {position.i - 2, position.j + 1},
@@ -19,11 +19,13 @@ std::vector<Position> Knight::GetPossibleMoves(const Board &board) {
         {position.i + 1, position.j - 2},
     };
 
-    for (int i = possibleMoves.size() - 1; i >= 0; i--) {
-        bool containsEmptySpaceOrEnemy = !board.At(possibleMoves[i]) || (board.At(possibleMoves[i]) && board.At(possibleMoves[i])->type != type);
+    std::vector<Move> possibleMoves;
 
-        if (!(board.IsPositionWithinBoundaries(possibleMoves[i])) || !containsEmptySpaceOrEnemy) {
-            possibleMoves.erase(possibleMoves.begin() + i);
+    for (const Position& position : possiblePositions) {
+        if (!board.At(position)) {
+            possibleMoves.push_back({Move::TYPE::WALK, position});
+        } else if (board.At(position) && board.At(position)->color != color) {
+            possibleMoves.push_back({Move::TYPE::ATTACK, position});
         }
     }
 

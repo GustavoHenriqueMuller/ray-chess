@@ -70,7 +70,7 @@ void Game::HandleInput() {
             possibleMoves = selectedPiece->GetPossibleMoves(board);
         } else {
             // Do movement.
-            if (selectedPiece != nullptr && IsPossibleMove(clickedPosition)) {
+            if (selectedPiece != nullptr && IsPossibleMovePosition(clickedPosition)) {
                 DoMove(clickedPosition);
             }
             
@@ -80,9 +80,9 @@ void Game::HandleInput() {
     }
 }
 
-bool Game::IsPossibleMove(const Position& move) {
-    for (const Position& possibleMove : possibleMoves) {
-        if (move.i == possibleMove.i && move.j == possibleMove.j) {
+bool Game::IsPossibleMovePosition(const Position& move) {
+    for (const Move& possibleMove : possibleMoves) {
+        if (move.i == possibleMove.position.i && move.j == possibleMove.position.j) {
             return true;
         }
     }
@@ -102,7 +102,7 @@ void Game::DoMove(const Position& move) {
 
     board.Set(move, selectedPiece);
     board.Set(selectedPiece->GetPosition(), nullptr);
-    selectedPiece->Move(move);
+    selectedPiece->DoMove(move);
 
     // Swap turns.
     this->turn = GetInverseColor(this->turn);
@@ -151,12 +151,12 @@ void Game::RenderPieces() {
 }
 
 void Game::RenderMovesSelectedPiece() {
-    for (const Position& move : possibleMoves) {
+    for (const Move& move : possibleMoves) {
         int radius = 17;
 
         DrawCircle(
-            move.j * CELL_SIZE + CELL_SIZE / 2,
-            move.i * CELL_SIZE + CELL_SIZE / 2,
+            move.position.j * CELL_SIZE + CELL_SIZE / 2,
+            move.position.i * CELL_SIZE + CELL_SIZE / 2,
             radius,
             Color{0, 0, 0, 127}
         );

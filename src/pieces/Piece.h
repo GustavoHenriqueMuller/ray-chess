@@ -6,6 +6,7 @@ class Piece; // Forward declaration (circular dependency).
 #include "raylib.h"
 #include "../Position.h"
 #include "../Board.h"
+#include "../Move.h"
 
 #include <vector>
 
@@ -27,8 +28,8 @@ public:
 
     Piece(Position position, COLOR color, TYPE type, const Texture& texture): position(position), color(color), type(type), texture(texture) {}
 
-    virtual void Move(const Position& move);
-    virtual std::vector<Position> GetPossibleMoves(const Board& board) = 0;
+    virtual void DoMove(const Position& move);
+    virtual std::vector<Move> GetPossibleMoves(const Board& board) = 0;
 
     Position GetPosition();
 
