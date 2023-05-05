@@ -75,7 +75,11 @@ void Renderer::RenderGuideText() {
 }
 
 void Renderer::RenderPromotionScreen(const std::map<std::string, Texture>& textures, Piece::COLOR colorOfPeon) {
+    const char* textPromotion = "Promotion";
+    int textPromotionLength = MeasureText(textPromotion, 40);
+
     DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, Color{0, 0, 0, 127});
+    DrawText(textPromotion, Game::WINDOW_WIDTH / 2 - textPromotionLength / 2, Game::WINDOW_HEIGHT / 4, 40, WHITE);
 
     std::string prefix = colorOfPeon == Piece::COLOR::C_WHITE ? "w" : "b";
 

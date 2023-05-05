@@ -30,6 +30,7 @@ private:
     void HandleInput();
     void HandlePromotionInput();
     Move* GetMoveAtPosition(const Position& position);
+    void ChangeMouseCursor();
 
     void DoMove(const Move& move);
     void DoShortCastling(const Move& move);

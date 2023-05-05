@@ -11,8 +11,8 @@
 #include <iostream>
 
 const std::string Game::ASSETS_PATH = "../assets";
-const Color Game::LIGHT_SHADE = Color{235, 236, 208, 255};
-const Color Game::DARK_SHADE = Color{119, 149, 86, 255};
+const Color Game::LIGHT_SHADE = Color{240, 217, 181, 255};
+const Color Game::DARK_SHADE = Color{181, 136, 99, 255};
 
 Game::Game() {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RayChess");
@@ -56,6 +56,7 @@ void Game::Run() {
     while (!WindowShouldClose()){
         // Input.
         inPromotion ? HandlePromotionInput() : HandleInput();
+        ChangeMouseCursor();
 
         // Render.
         BeginDrawing();
@@ -148,6 +149,30 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     }
     
     return nullptr;
+}
+
+void Game::ChangeMouseCursor() {
+    Vector2 mousePosition = GetMousePosition();
+    Position hoverPosition = {int(mousePosition.y) / CELL_SIZE, int(mousePosition.x) / CELL_SIZE};
+
+    bool isHoveringOverPiece = board.At(hoverPosition) && board.At(hoverPosition)->color == turn;
+    auto it = std::find_if(possibleMoves.begin(), possibleMoves.end(), [hoverPosition](const Move& m) {
+        return m.position.i == hoverPosition.i && m.position.j == hoverPosition.j;
+    });
+
+    bool isHoveringOverMove = it != possibleMoves.end();
+
+    // Set mouse to pointer if hovering over piece or hovering over move.
+    if (isHoveringOverPiece || isHoveringOverMove) {
+        SetMouseCursor(4);
+    } else {
+        SetMouseCursor(0);
+    }
+
+    // If in promotion screen, also set mouse to pointer if hovering over the options.
+    if (inPromotion && (hoverPosition.i == 3 && hoverPosition.j >= 2 && hoverPosition.j <= 5)) {
+        SetMouseCursor(4);
+    }
 }
 
 void Game::DoMove(const Move& move) {
