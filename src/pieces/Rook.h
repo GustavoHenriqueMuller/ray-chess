@@ -6,7 +6,7 @@
 
 class Rook : public Piece {
 public:
-    Rook(Position position, TYPE type, const Texture& texture): Piece(position, type, texture) {}
+    Rook(Position position, COLOR color, const Texture& texture): Piece(position, color, Piece::TYPE::ROOK, texture) {}
     std::vector<Position> GetPossibleMoves(const Board& board) override;
 
 private:

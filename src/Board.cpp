@@ -1,4 +1,12 @@
+#include <string>
+#include <map>
 #include "Board.h"
+#include "pieces/Peon.h"
+#include "pieces/Rook.h"
+#include "pieces/Knight.h"
+#include "pieces/Bishop.h"
+#include "pieces/Queen.h"
+#include "pieces/King.h"
 
 Board::Board() {
     // Init board.
@@ -12,6 +20,42 @@ Board::Board() {
 Board::~Board() {
     // Free board.
     Clear();
+}
+
+void Board::Init(const std::map<std::string, Texture>& textures) {
+    // Init black pieces (computer).
+    for (int j = 0; j < 8; j++) {
+        Set({1, j}, new Peon({1, j}, Piece::COLOR::C_BLACK, textures.at("bp")));
+    }
+
+    Set({0, 0}, new Rook({0, 0}, Piece::COLOR::C_BLACK, textures.at("br")));
+    Set({0, 7}, new Rook({0, 7}, Piece::COLOR::C_BLACK, textures.at("br")));
+
+    Set({0, 1}, new Knight({0, 1}, Piece::COLOR::C_BLACK, textures.at("bn")));
+    Set({0, 6}, new Knight({0, 6}, Piece::COLOR::C_BLACK, textures.at("bn")));
+
+    Set({0, 2}, new Bishop({0, 2}, Piece::COLOR::C_BLACK, textures.at("bb")));
+    Set({0, 5}, new Bishop({0, 2}, Piece::COLOR::C_BLACK, textures.at("bb")));
+
+    Set({0, 3}, new Queen({0, 3}, Piece::COLOR::C_BLACK, textures.at("bq")));
+    Set({0, 4}, new King({0, 4}, Piece::COLOR::C_BLACK, textures.at("bk")));
+
+    // Init white pieces (player).
+    for (int j = 0; j < 8; j++) {
+        Set({6, j}, new Peon({6, j}, Piece::COLOR::C_WHITE, textures.at("wp")));
+    }
+
+    Set({7, 0}, new Rook({7, 0}, Piece::COLOR::C_WHITE, textures.at("wr")));
+    Set({7, 7}, new Rook({7, 7}, Piece::COLOR::C_WHITE, textures.at("wr")));
+
+    Set({7, 1}, new Knight({7, 1}, Piece::COLOR::C_WHITE, textures.at("wn")));
+    Set({7, 6}, new Knight({7, 6}, Piece::COLOR::C_WHITE, textures.at("wn")));
+
+    Set({7, 2}, new Bishop({7, 2}, Piece::COLOR::C_WHITE, textures.at("wb")));
+    Set({7, 5}, new Bishop({7, 5}, Piece::COLOR::C_WHITE, textures.at("wb")));
+
+    Set({7, 3}, new Queen({7, 3}, Piece::COLOR::C_WHITE, textures.at("wq")));
+    Set({7, 4}, new King({7, 4}, Piece::COLOR::C_WHITE, textures.at("wk")));
 }
 
 Piece* Board::At(const Position& position) const {
