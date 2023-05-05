@@ -7,8 +7,6 @@
 class Peon : public Piece {
 public:
     Peon(Position position, TYPE type, const Texture& texture): Piece(position, type, texture) {}
-
-    void Move(const Position& move) override;
     std::vector<Position> GetPossibleMoves(const Board& board) override;
 };
 

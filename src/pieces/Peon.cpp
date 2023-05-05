@@ -3,11 +3,6 @@
 // TODO: EN PASSANT
 // TODO: PROMOTION
 
-void Peon::Move(const Position &move) {
-    hasMoved = true;
-    position = move;
-}
-
 std::vector<Position> Peon::GetPossibleMoves(const Board& board) {
     std::vector<Position> moves;
 

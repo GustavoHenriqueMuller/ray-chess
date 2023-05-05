@@ -18,7 +18,7 @@ public:
 
     Piece(Position position, TYPE type, const Texture& texture): position(position), type(type), texture(texture) {}
 
-    virtual void Move(const Position& move) = 0;
+    virtual void Move(const Position& move);
     virtual std::vector<Position> GetPossibleMoves(const Board& board) = 0;
 
     Position GetPosition();

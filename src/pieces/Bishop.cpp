@@ -1,11 +1,6 @@
 #include "Bishop.h"
 
-void Bishop::Move(const Position &move) {
-    hasMoved = true;
-    position = move;
-}
-
-std::vector<Position> Bishop::GetPossibleMoves(const Board &board) {
+std::vector<Position> Bishop::GetPossibleMoves(const Board& board) {
     std::vector<Position> moves;
 
     // Checking up-left.

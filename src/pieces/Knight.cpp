@@ -1,10 +1,5 @@
 #include "Knight.h"
 
-void Knight::Move(const Position &move) {
-    hasMoved = true;
-    position = move;
-}
-
 std::vector<Position> Knight::GetPossibleMoves(const Board &board) {
     std::vector<Position> possibleMoves = {
         // Up.
