@@ -70,8 +70,10 @@ void Game::HandleInput() {
             possibleMoves = selectedPiece->GetPossibleMoves(board);
         } else {
             // Do movement.
-            if (selectedPiece != nullptr && IsPossibleMovePosition(clickedPosition)) {
-                DoMove(clickedPosition);
+            Move* desiredMove = GetMoveAtPosition(clickedPosition);
+
+            if (selectedPiece != nullptr && desiredMove) {
+                DoMove(*desiredMove);
             }
             
             selectedPiece = nullptr;
@@ -80,27 +82,30 @@ void Game::HandleInput() {
     }
 }
 
-bool Game::IsPossibleMovePosition(const Position& move) {
-    for (const Move& possibleMove : possibleMoves) {
-        if (move.i == possibleMove.position.i && move.j == possibleMove.position.j) {
-            return true;
+Move* Game::GetMoveAtPosition(const Position& position) {
+    for (Move& move : possibleMoves) {
+        if (move.position.i == position.i && move.position.j == position.j) {
+            return &move;
         }
     }
     
-    return false;
+    return nullptr;
 }
 
-void Game::DoMove(const Position& move) {
+void Game::DoMove(const Move& move) {
     // Delete piece, if any.
-    if (board.At(move) && board.At(move)->color != selectedPiece->color) {
+    if (move.type == Move::TYPE::ATTACK) {
         // TODO: CHECAR POR REI, CHEQUE, ETC
-        board.Destroy(move);
+        board.Destroy(move.position);
+    } else if (move.type == Move::TYPE::EN_PASSANT) {
+        // TODO: CHECAR POR REI, CHEQUE, ETC
+        board.Destroy({selectedPiece->GetPosition().i, move.position.j});
     }
 
     // Swap positions.
     // TODO: CHECAR SE NÃO VAI DEIXAR O REI EM CHEQUE
 
-    board.Set(move, selectedPiece);
+    board.Set(move.position, selectedPiece);
     board.Set(selectedPiece->GetPosition(), nullptr);
     selectedPiece->DoMove(move);
 

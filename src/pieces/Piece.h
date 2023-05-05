@@ -28,7 +28,7 @@ public:
 
     Piece(Position position, COLOR color, TYPE type, const Texture& texture): position(position), color(color), type(type), texture(texture) {}
 
-    virtual void DoMove(const Position& move);
+    virtual void DoMove(const Move& move);
     virtual std::vector<Move> GetPossibleMoves(const Board& board) = 0;
 
     Position GetPosition();

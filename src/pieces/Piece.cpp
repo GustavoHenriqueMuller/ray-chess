@@ -1,8 +1,8 @@
 #include "Piece.h"
 
-void Piece::DoMove(const Position &move) {
+void Piece::DoMove(const Move &move) {
     hasMoved = true;
-    position = move;
+    position = move.position;
 }
 
 Position Piece::GetPosition() {

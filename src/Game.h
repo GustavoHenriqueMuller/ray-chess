@@ -26,8 +26,8 @@ public:
 private:
     void LoadTextures();
     void HandleInput();
-    bool IsPossibleMovePosition(const Position& move);
-    void DoMove(const Position& move);
+    Move* GetMoveAtPosition(const Position& position);
+    void DoMove(const Move& move);
 
     void RenderBackground();
     void RenderPieces();
