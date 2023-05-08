@@ -35,7 +35,10 @@ private:
     void DoMove(const Move& move);
     void DoShortCastling(const Move& move);
     void DoLongCastling(const Move& move);
-    void MovePiece(Piece* piece, const Move& move);
+
+    void CheckForEndOfGame();
+    bool CheckForCheck();
+    bool IsAnyMovePossible(const std::vector<Piece*>& pieces);
 
     Board board;
     std::map<std::string, Texture> textures;

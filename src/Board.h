@@ -8,21 +8,22 @@ class Board;  // Forward declaration (circular dependency).
 
 #include <map>
 #include <string>
+#include <vector>
 
 class Board {
 public:
-    Board();
-    ~Board();
-
     void Init();
     Piece* At(const Position& position) const;
-    void Set(const Position& position, Piece* piece);
+    void Add(Piece* piece);
     void Destroy(const Position &position);
     void Clear();
     bool IsPositionWithinBoundaries(const Position& position) const;
 
+    std::vector<Piece*> GetPiecesByColor(Piece::COLOR color);
+
 private:
-    Piece* pieces[8][8];
+    std::vector<Piece*> whitePieces;
+    std::vector<Piece*> blackPieces;
 };
 
 #endif //RAY_CHESS_BOARD_H

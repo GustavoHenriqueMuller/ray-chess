@@ -8,79 +8,103 @@
 #include "pieces/Queen.h"
 #include "pieces/King.h"
 
-Board::Board() {
-    // Init board.
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            pieces[i][j] = nullptr;
-        }
-    }
-}
-
-Board::~Board() {
-    // Free board.
-    Clear();
-}
-
 void Board::Init() {
     // Init black pieces (computer).
     for (int j = 0; j < 8; j++) {
-        Set({1, j}, new Peon({1, j}, Piece::COLOR::C_BLACK));
+        Add(new Peon({1, j}, Piece::COLOR::C_BLACK));
     }
 
-    Set({0, 0}, new Rook({0, 0}, Piece::COLOR::C_BLACK));
-    Set({0, 7}, new Rook({0, 7}, Piece::COLOR::C_BLACK));
+    Add(new Rook({0, 0}, Piece::COLOR::C_BLACK));
+    Add(new Rook({0, 7}, Piece::COLOR::C_BLACK));
 
-    Set({0, 1}, new Knight({0, 1}, Piece::COLOR::C_BLACK));
-    Set({0, 6}, new Knight({0, 6}, Piece::COLOR::C_BLACK));
+    Add(new Knight({0, 1}, Piece::COLOR::C_BLACK));
+    Add(new Knight({0, 6}, Piece::COLOR::C_BLACK));
 
-    Set({0, 2}, new Bishop({0, 2}, Piece::COLOR::C_BLACK));
-    Set({0, 5}, new Bishop({0, 5}, Piece::COLOR::C_BLACK));
+    Add(new Bishop({0, 2}, Piece::COLOR::C_BLACK));
+    Add(new Bishop({0, 5}, Piece::COLOR::C_BLACK));
 
-    Set({0, 3}, new Queen({0, 3}, Piece::COLOR::C_BLACK));
-    Set({0, 4}, new King({0, 4}, Piece::COLOR::C_BLACK));
+    Add(new Queen({0, 3}, Piece::COLOR::C_BLACK));
+    Add(new King({0, 4}, Piece::COLOR::C_BLACK));
 
     // Init white pieces (player).
     for (int j = 0; j < 8; j++) {
-        Set({6, j}, new Peon({6, j}, Piece::COLOR::C_WHITE));
+        Add(new Peon({6, j}, Piece::COLOR::C_WHITE));
     }
 
-    Set({7, 0}, new Rook({7, 0}, Piece::COLOR::C_WHITE));
-    Set({7, 7}, new Rook({7, 7}, Piece::COLOR::C_WHITE));
+    Add(new Rook({7, 0}, Piece::COLOR::C_WHITE));
+    Add(new Rook({7, 7}, Piece::COLOR::C_WHITE));
 
-    Set({7, 1}, new Knight({7, 1}, Piece::COLOR::C_WHITE));
-    Set({7, 6}, new Knight({7, 6}, Piece::COLOR::C_WHITE));
+    Add(new Knight({7, 1}, Piece::COLOR::C_WHITE));
+    Add(new Knight({7, 6}, Piece::COLOR::C_WHITE));
 
-    Set({7, 2}, new Bishop({7, 2}, Piece::COLOR::C_WHITE));
-    Set({7, 5}, new Bishop({7, 5}, Piece::COLOR::C_WHITE));
+    Add(new Bishop({7, 2}, Piece::COLOR::C_WHITE));
+    Add(new Bishop({7, 5}, Piece::COLOR::C_WHITE));
 
-    Set({7, 3}, new Queen({7, 3}, Piece::COLOR::C_WHITE));
-    Set({7, 4}, new King({7, 4}, Piece::COLOR::C_WHITE));
+    Add(new Queen({7, 3}, Piece::COLOR::C_WHITE));
+    Add(new King({7, 4}, Piece::COLOR::C_WHITE));
 }
 
 Piece* Board::At(const Position& position) const {
     if (!IsPositionWithinBoundaries(position)) return nullptr;
 
-    return pieces[position.i][position.j];
+    for (Piece* whitePiece : whitePieces) {
+        if (whitePiece->GetPosition().i == position.i && whitePiece->GetPosition().j == position.j) {
+            return whitePiece;
+        }
+    }
+
+    for (Piece* blackPiece : blackPieces) {
+        if (blackPiece->GetPosition().i == position.i && blackPiece->GetPosition().j == position.j) {
+            return blackPiece;
+        }
+    }
+
+    return nullptr;
 }
 
-void Board::Set(const Position& position, Piece *piece) {
-    pieces[position.i][position.j] = piece;
+void Board::Add(Piece* piece) {
+    if (piece->color == Piece::COLOR::C_WHITE) {
+        whitePieces.push_back(piece);
+    } else {
+        blackPieces.push_back(piece);
+    }
 }
 
 void Board::Destroy(const Position& position) {
-    if (pieces[position.i][position.j]) {
-        delete pieces[position.i][position.j]; // @TODO: VER
-        pieces[position.i][position.j] = nullptr;
+    for (unsigned int i = 0; i < whitePieces.size(); i++) {
+        if (whitePieces[i]->GetPosition().i == position.i && whitePieces[i]->GetPosition().j == position.j) {
+            delete whitePieces[i];
+            whitePieces.erase(whitePieces.begin() + i);
+            return;
+        }
+    }
+
+    for (unsigned int i = 0; i < blackPieces.size(); i++) {
+        if (blackPieces[i]->GetPosition().i == position.i && blackPieces[i]->GetPosition().j == position.j) {
+            delete blackPieces[i];
+            blackPieces.erase(blackPieces.begin() + i);
+            return;
+        }
     }
 }
 
 void Board::Clear() {
-    // Free board.
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            Destroy({i, j});
-        }
+    for (unsigned int i = 0; i < whitePieces.size(); i++) {
+        delete whitePieces[i];
+        whitePieces.erase(whitePieces.begin() + i);
+    }
+
+    for (unsigned int i = 0; i < blackPieces.size(); i++) {
+        delete blackPieces[i];
+        blackPieces.erase(blackPieces.begin() + i);
+    }
+}
+
+std::vector<Piece*> Board::GetPiecesByColor(Piece::COLOR color) {
+    if (color == Piece::COLOR::C_WHITE) {
+        return whitePieces;
+    } else {
+        return blackPieces;
     }
 }
 
