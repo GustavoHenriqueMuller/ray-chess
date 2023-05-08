@@ -68,7 +68,7 @@ void Game::Run() {
             std::vector<Move> movesOfSelectedPiece;
 
             if (selectedPiece) {
-                movesOfSelectedPiece = possibleMovesPerPiece.at(selectedPiece->GetName());
+                movesOfSelectedPiece = possibleMovesPerPiece.at(selectedPiece);
             }
 
             Renderer::ChangeMouseCursor(board, movesOfSelectedPiece, turn, inPromotion);
@@ -131,7 +131,6 @@ void Game::HandleInput() {
                 desiredMove->type != MOVE_TYPE::ATTACK_AND_PROMOTION)
             ) {
                 selectedPiece = nullptr;
-                possibleMovesPerPiece.clear();
             }
         }
     }
@@ -230,7 +229,7 @@ void Game::CalculateAllPossibleMovements() {
     possibleMovesPerPiece.clear();
 
     for (Piece* piece : board.GetPiecesByColor(turn)) {
-        possibleMovesPerPiece[piece->GetName()] = piece->GetPossibleMoves(board);
+        possibleMovesPerPiece[piece] = piece->GetPossibleMoves(board);
     }
 }
 
@@ -238,8 +237,6 @@ void Game::CheckForEndOfGame() {
     std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
 
     if (CheckForCheck()) {
-        std::cout << "To em cheque!" << std::endl;
-
         // Remove the moves that do not remove check.
         FilterMovesThatDoNotRemoveCheck();
 
@@ -276,33 +273,20 @@ bool Game::CheckForCheck() {
     return false;
 }
 
-/*bool Game::CheckCheckmate() {
-    std::vector<Piece*> myPieces;
-
-    for (Piece* piece : myPieces) {
-        std::vector<Move> piecePossibleMoves = possibleMovesPerPiece.at(piece->GetName());
-
-        // If there are moves that remove the check, the king is not in checkmate.
-        if (!piecePossibleMoves.empty()) {
-            return false;
-        }
-    }
-
-    return true;
-}*/
-
 void Game::FilterMovesThatDoNotRemoveCheck() {
     for (auto& [pieceName, possibleMoves] : possibleMovesPerPiece) {
-        for (size_t i = possibleMoves.size() - 1; i < possibleMoves.size(); i--) {
+        for (size_t i = possibleMoves.size() - 1; i >= 0; i--) {
+            // TODO: ARRUMAR ISSO
+
             Board boardBackup = board;
             Move& move = possibleMoves[i];
 
             // If the move does not remove the check after being done, remove it from the
             // vector of possible moves.
-            DoMove(move);
+            // DoMove(move);
 
             if (CheckForCheck()) {
-                possibleMoves.erase(possibleMoves.begin() + i);
+                //possibleMoves.erase(possibleMoves.begin() + i);
             }
 
             board = boardBackup;

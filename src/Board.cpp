@@ -8,7 +8,7 @@
 #include "pieces/Queen.h"
 #include "pieces/King.h"
 
-Board::Board(const Board &other) {
+Board::Board(const Board& other) {
     Clear();
 
     for (Piece* whitePiece : other.whitePieces) {

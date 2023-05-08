@@ -46,7 +46,6 @@ private:
     void CalculateAllPossibleMovements();
     void CheckForEndOfGame();
     bool CheckForCheck();
-    //bool CheckCheckmate();
     void FilterMovesThatDoNotRemoveCheck();
     bool IsAnyMovePossible();
 
@@ -56,7 +55,7 @@ private:
 
     PIECE_COLOR turn = PIECE_COLOR::C_WHITE;
     Piece* selectedPiece = nullptr;
-    std::map<std::string, std::vector<Move>> possibleMovesPerPiece;
+    std::map<Piece*, std::vector<Move>> possibleMovesPerPiece;
 
     bool inPromotion = false;
     GAME_STATE state = GAME_STATE::RUNNING;
