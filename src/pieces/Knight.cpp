@@ -23,9 +23,9 @@ std::vector<Move> Knight::GetPossibleMoves(const Board &board) {
 
     for (const Position& position : possiblePositions) {
         if (!board.At(position)) {
-            possibleMoves.push_back({Move::TYPE::WALK, position});
+            possibleMoves.push_back({MOVE_TYPE::WALK, position});
         } else if (board.At(position) && board.At(position)->color != color) {
-            possibleMoves.push_back({Move::TYPE::ATTACK, position});
+            possibleMoves.push_back({MOVE_TYPE::ATTACK, position});
         }
     }
 

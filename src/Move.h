@@ -3,19 +3,19 @@
 
 #include "Position.h"
 
-struct Move {
-    enum TYPE {
-        WALK,
-        DOUBLE_WALK,
-        ATTACK,
-        SHORT_CASTLING,
-        LONG_CASTLING,
-        EN_PASSANT,
-        PROMOTION,
-        ATTACK_AND_PROMOTION,
-    };
+enum MOVE_TYPE {
+    WALK,
+    DOUBLE_WALK,
+    ATTACK,
+    SHORT_CASTLING,
+    LONG_CASTLING,
+    EN_PASSANT,
+    PROMOTION,
+    ATTACK_AND_PROMOTION,
+};
 
-    TYPE type;
+struct Move {
+    MOVE_TYPE type;
     Position position;
 };
 

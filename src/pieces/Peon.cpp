@@ -1,7 +1,7 @@
 #include "Peon.h"
 
 void Peon::DoMove(const Move &move) {
-    if (move.type == Move::TYPE::DOUBLE_WALK) {
+    if (move.type == MOVE_TYPE::DOUBLE_WALK) {
         hasOnlyMadeDoubleWalk = true;
     } else {
         hasOnlyMadeDoubleWalk = false;
@@ -17,14 +17,14 @@ std::vector<Move> Peon::GetPossibleMoves(const Board& board) {
     Position walk = {position.i + (color == PIECE_COLOR::C_BLACK ? +1 : -1), position.j};
 
     if (!board.At(walk)) {
-        moves.push_back({Move::TYPE::WALK, walk});
+        moves.push_back({MOVE_TYPE::WALK, walk});
     }
 
     // Check for moving two cells, if the peon has not been moved.
     Position twoCellWalk = {position.i + (color == PIECE_COLOR::C_BLACK ? +2 : -2), position.j};
 
     if (!board.At(twoCellWalk) && !board.At(twoCellWalk) && !this->hasMoved) {
-        moves.push_back({Move::TYPE::DOUBLE_WALK, twoCellWalk});
+        moves.push_back({MOVE_TYPE::DOUBLE_WALK, twoCellWalk});
     }
 
     // Check for attacks (diagonals).
@@ -34,35 +34,35 @@ std::vector<Move> Peon::GetPossibleMoves(const Board& board) {
     Position attackRight = {attackRow, position.j + 1};
 
     if (board.At(attackLeft) && board.At(attackLeft)->color != color) {
-        moves.push_back({Move::TYPE::ATTACK, attackLeft});
+        moves.push_back({MOVE_TYPE::ATTACK, attackLeft});
     }
 
     if (board.At(attackRight) && board.At(attackRight)->color != color) {
-        moves.push_back({Move::TYPE::ATTACK, attackRight});
+        moves.push_back({MOVE_TYPE::ATTACK, attackRight});
     }
 
     // Check for en passant (left).
     Position enPassantAttackLeft = {attackRow, position.j - 1};
 
     if (CheckEnPassant(board, {position.i, position.j - 1}, enPassantAttackLeft)) {
-        moves.push_back({Move::TYPE::EN_PASSANT, enPassantAttackLeft});
+        moves.push_back({MOVE_TYPE::EN_PASSANT, enPassantAttackLeft});
     }
 
     // Check for en passant (right).
     Position enPassantAttackRight = {attackRow, position.j + 1};
 
     if (CheckEnPassant(board, {position.i, position.j + 1}, enPassantAttackRight)) {
-        moves.push_back({Move::TYPE::EN_PASSANT, enPassantAttackRight});
+        moves.push_back({MOVE_TYPE::EN_PASSANT, enPassantAttackRight});
     }
 
     // Check for promotion.
     for (Move& move : moves) {
         // Check for promotion if on first row and white, or last row and black.
         if (IsPromotionPosition(move.position)) {
-            if (move.type == Move::TYPE::ATTACK) {
-                move.type = Move::TYPE::ATTACK_AND_PROMOTION;
-            } else if (move.type == Move::TYPE::WALK) {
-                move.type = Move::TYPE::PROMOTION;
+            if (move.type == MOVE_TYPE::ATTACK) {
+                move.type = MOVE_TYPE::ATTACK_AND_PROMOTION;
+            } else if (move.type == MOVE_TYPE::WALK) {
+                move.type = MOVE_TYPE::PROMOTION;
             }
         }
     }

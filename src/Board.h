@@ -13,6 +13,10 @@ class Board;  // Forward declaration (circular dependency).
 
 class Board {
 public:
+    Board() = default;
+    Board(const Board& other);
+    ~Board();
+
     void Init();
     Piece* At(const Position& position) const;
     void Add(Piece* piece);

@@ -8,6 +8,16 @@
 #include "pieces/Queen.h"
 #include "pieces/King.h"
 
+Board::Board(const Board &other) {
+    for (size_t i = 0; i < whitePieces.size(); i++) {
+        other
+    }
+}
+
+Board::~Board() {
+    Clear();
+}
+
 void Board::Init() {
     // Init black pieces (computer).
     for (int j = 0; j < 8; j++) {
@@ -89,15 +99,16 @@ void Board::Destroy(const Position& position) {
 }
 
 void Board::Clear() {
-    for (unsigned int i = 0; i < whitePieces.size(); i++) {
-        delete whitePieces[i];
-        whitePieces.erase(whitePieces.begin() + i);
+    for (auto& whitePiece : whitePieces) {
+        delete whitePiece;
     }
 
-    for (unsigned int i = 0; i < blackPieces.size(); i++) {
-        delete blackPieces[i];
-        blackPieces.erase(blackPieces.begin() + i);
+    for (auto& blackPiece : blackPieces) {
+        delete blackPiece;
     }
+
+    whitePieces.clear();
+    blackPieces.clear();
 }
 
 std::vector<Piece*> Board::GetPiecesByColor(PIECE_COLOR color) {
@@ -111,3 +122,5 @@ std::vector<Piece*> Board::GetPiecesByColor(PIECE_COLOR color) {
 bool Board::IsPositionWithinBoundaries(const Position &position) const {
     return position.j >= 0 && position.j < 8 && position.i >= 0 && position.i < 8;
 }
+
+

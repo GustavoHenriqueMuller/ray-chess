@@ -31,7 +31,6 @@ private:
     void HandleInput();
     void HandlePromotionInput();
     Move* GetMoveAtPosition(const Position& position);
-    void ChangeMouseCursor();
 
     void DoMove(const Move& move);
     void DoShortCastling(const Move& move);
@@ -39,6 +38,7 @@ private:
 
     void CheckForEndOfGame();
     bool CheckForCheck(PIECE_COLOR player);
+    void FilterMovesThatDoNotRemoveCheck(std::vector<Move>& moves);
     bool IsAnyMovePossible(const std::vector<Piece*>& pieces);
 
     // Game state.
@@ -50,6 +50,8 @@ private:
     std::vector<Move> possibleMoves;
 
     bool inPromotion = false;
+    bool inCheck = false;
+
     bool isGameOver = false;
 
     // Game information (current round and time).

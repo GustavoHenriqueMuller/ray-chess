@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Renderer.h"
 #include "Game.h"
 
@@ -112,22 +113,63 @@ void Renderer::RenderPromotionScreen(const std::map<std::string, Texture>& textu
     }
 }
 
-std::string Renderer::GetTextureNameFromMoveType(Move::TYPE moveType) {
+void Renderer::RenderInfoBar(int round, double time) {
+    DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::INFO_BAR_HEIGHT, BLACK);
+
+    std::string roundText = "Round: " + std::to_string(round);
+    std::string timeText = "Time: " + std::to_string((int) time) + "s";
+
+    int timeTextWidth = MeasureText(timeText.c_str(), 20);
+    int padding = 5;
+
+    DrawText(roundText.c_str(), padding, Game::INFO_BAR_HEIGHT / 2 - 10, 20, WHITE);
+    DrawText(timeText.c_str(), Game::WINDOW_WIDTH - timeTextWidth - padding, Game::INFO_BAR_HEIGHT / 2 - 10, 20, WHITE);
+}
+
+void Renderer::ChangeMouseCursor(const Board& board, const std::vector<Move>& possibleMoves, PIECE_COLOR turn, bool inPromotion) {
+    Vector2 mousePosition = GetMousePosition();
+    mousePosition.y -= Game::INFO_BAR_HEIGHT;
+
+    Position hoverPosition = {int(mousePosition.y) / Game::CELL_SIZE, int(mousePosition.x) / Game::CELL_SIZE};
+
+    if (!inPromotion) {
+        bool isHoveringOverPiece = board.At(hoverPosition) && board.At(hoverPosition)->color == turn;
+        auto it = std::find_if(possibleMoves.begin(), possibleMoves.end(), [hoverPosition](const Move& m) {
+            return m.position.i == hoverPosition.i && m.position.j == hoverPosition.j;
+        });
+
+        bool isHoveringOverMove = it != possibleMoves.end();
+
+        // Set mouse to pointer if hovering over piece or hovering over move.
+        if (isHoveringOverPiece || isHoveringOverMove) {
+            SetMouseCursor(4);
+        } else {
+            SetMouseCursor(0);
+        }
+    } else {
+        // If in promotion screen, also set mouse to pointer if hovering over the options.
+        if (hoverPosition.i == 3 && hoverPosition.j >= 2 && hoverPosition.j <= 5) {
+            SetMouseCursor(4);
+        }
+    }
+}
+
+std::string Renderer::GetTextureNameFromMoveType(MOVE_TYPE moveType) {
     switch (moveType) {
-        case Move::TYPE::WALK:
-        case Move::TYPE::DOUBLE_WALK:
-        case Move::TYPE::ATTACK:
+        case MOVE_TYPE::WALK:
+        case MOVE_TYPE::DOUBLE_WALK:
+        case MOVE_TYPE::ATTACK:
             return "move";
 
-        case Move::TYPE::SHORT_CASTLING:
-        case Move::TYPE::LONG_CASTLING:
+        case MOVE_TYPE::SHORT_CASTLING:
+        case MOVE_TYPE::LONG_CASTLING:
             return "castling";
 
-        case Move::TYPE::EN_PASSANT:
+        case MOVE_TYPE::EN_PASSANT:
             return "enpassant";
 
-        case Move::TYPE::PROMOTION:
-        case Move::TYPE::ATTACK_AND_PROMOTION:
+        case MOVE_TYPE::PROMOTION:
+        case MOVE_TYPE::ATTACK_AND_PROMOTION:
             return "promotion";
     }
 }
@@ -143,18 +185,7 @@ PIECE_COLOR Renderer::GetColorOfCell(const Position& cellPosition) {
     return colorIndex == 0 ? PIECE_COLOR::C_WHITE : PIECE_COLOR::C_BLACK;
 }
 
-void Renderer::RenderInfoBar(int round, double time) {
-    DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::INFO_BAR_HEIGHT, BLACK);
 
-    std::string roundText = "Round: " + std::to_string(round);
-    std::string timeText = "Time: " + std::to_string((int) time) + "s";
-
-    int timeTextWidth = MeasureText(timeText.c_str(), 20);
-    int padding = 5;
-
-    DrawText(roundText.c_str(), padding, Game::INFO_BAR_HEIGHT / 2 - 10, 20, WHITE);
-    DrawText(timeText.c_str(), Game::WINDOW_WIDTH - timeTextWidth - padding, Game::INFO_BAR_HEIGHT / 2 - 10, 20, WHITE);
-}
 
 
 

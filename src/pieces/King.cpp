@@ -24,20 +24,20 @@ std::vector<Move> King::GetPossibleMoves(const Board &board) {
 
     for (const Position& position : possiblePositions) {
         if (!board.At(position)) {
-            possibleMoves.push_back({Move::TYPE::WALK, position});
+            possibleMoves.push_back({MOVE_TYPE::WALK, position});
         } else if (board.At(position) && board.At(position)->color != color) {
-            possibleMoves.push_back({Move::TYPE::ATTACK, position});
+            possibleMoves.push_back({MOVE_TYPE::ATTACK, position});
         }
     }
 
     // Check for long castling (left rook).
     if (CheckCastling(board, {position.i, 0})) {
-        possibleMoves.push_back({Move::TYPE::LONG_CASTLING, {position.i, 2}});
+        possibleMoves.push_back({MOVE_TYPE::LONG_CASTLING, {position.i, 2}});
     }
 
     // Check for short castling (right rook).
     if (CheckCastling(board, {position.i, 7})) {
-        possibleMoves.push_back({Move::TYPE::SHORT_CASTLING, {position.i, 6}});
+        possibleMoves.push_back({MOVE_TYPE::SHORT_CASTLING, {position.i, 6}});
     }
 
     return possibleMoves;

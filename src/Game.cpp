@@ -8,6 +8,7 @@
 #include "pieces/Rook.h"
 
 #include <filesystem>
+#include <iostream>
 
 const std::string Game::ASSETS_PATH = "../assets";
 const Color Game::LIGHT_SHADE = Color{240, 217, 181, 255};
@@ -55,13 +56,14 @@ void Game::Run() {
     while (!WindowShouldClose() && !isGameOver){
         // Input.
         inPromotion ? HandlePromotionInput() : HandleInput();
-        ChangeMouseCursor();
 
         // Getting new time.
         time += GetFrameTime();
 
         // Render.
         BeginDrawing();
+            Renderer::ChangeMouseCursor(board, possibleMoves, turn, inPromotion);
+
             Renderer::Clear();
             Renderer::RenderBackground();
             Renderer::RenderPieces(board, textures);
@@ -105,6 +107,10 @@ void Game::HandleInput() {
         if (clickedPiece != nullptr && clickedPiece->color == turn) {
             selectedPiece = clickedPiece;
             possibleMoves = selectedPiece->GetPossibleMoves(board);
+
+            if (inCheck) {
+                FilterMovesThatDoNotRemoveCheck(possibleMoves);
+            }
         } else {
             // Do movement.
             Move* desiredMove = GetMoveAtPosition(clickedPosition);
@@ -115,8 +121,8 @@ void Game::HandleInput() {
 
             // Piece must still be selected to render promotion screen.
             if (!desiredMove ||
-               (desiredMove->type != Move::TYPE::PROMOTION &&
-                desiredMove->type != Move::TYPE::ATTACK_AND_PROMOTION)
+               (desiredMove->type != MOVE_TYPE::PROMOTION &&
+                desiredMove->type != MOVE_TYPE::ATTACK_AND_PROMOTION)
             ) {
                 selectedPiece = nullptr;
                 possibleMoves.clear();
@@ -170,49 +176,23 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     return nullptr;
 }
 
-void Game::ChangeMouseCursor() {
-    Vector2 mousePosition = GetMousePosition();
-    Position hoverPosition = {int(mousePosition.y) / CELL_SIZE, int(mousePosition.x) / CELL_SIZE};
-
-    if (!inPromotion) {
-        bool isHoveringOverPiece = board.At(hoverPosition) && board.At(hoverPosition)->color == turn;
-        auto it = std::find_if(possibleMoves.begin(), possibleMoves.end(), [hoverPosition](const Move& m) {
-            return m.position.i == hoverPosition.i && m.position.j == hoverPosition.j;
-        });
-
-        bool isHoveringOverMove = it != possibleMoves.end();
-
-        // Set mouse to pointer if hovering over piece or hovering over move.
-        if (isHoveringOverPiece || isHoveringOverMove) {
-            SetMouseCursor(4);
-        } else {
-            SetMouseCursor(0);
-        }
-    } else {
-        // If in promotion screen, also set mouse to pointer if hovering over the options.
-        if (hoverPosition.i == 3 && hoverPosition.j >= 2 && hoverPosition.j <= 5) {
-            SetMouseCursor(4);
-        }
-    }
-}
-
 void Game::DoMove(const Move& move) {
     // Delete piece, if attack or en passant.
-    if (move.type == Move::TYPE::ATTACK || move.type == Move::TYPE::ATTACK_AND_PROMOTION) {
+    if (move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
         board.Destroy(move.position);
-    } else if (move.type == Move::TYPE::EN_PASSANT) {
+    } else if (move.type == MOVE_TYPE::EN_PASSANT) {
         board.Destroy({selectedPiece->GetPosition().i, move.position.j});
     }
 
     // In case of promotion, show promotion dialog and stop game.
-    if (move.type == Move::TYPE::PROMOTION || move.type == Move::TYPE::ATTACK_AND_PROMOTION) {
+    if (move.type == MOVE_TYPE::PROMOTION || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
         selectedPiece->DoMove(move);
         inPromotion = true;
     } else {
         // Move piece. In case of castling, also move rook.
-        if (move.type == Move::TYPE::SHORT_CASTLING) {
+        if (move.type == MOVE_TYPE::SHORT_CASTLING) {
             DoShortCastling(move);
-        } else if (move.type == Move::TYPE::LONG_CASTLING) {
+        } else if (move.type == MOVE_TYPE::LONG_CASTLING) {
             DoLongCastling(move);
         } else {
             // Swap positions.
@@ -228,20 +208,24 @@ void Game::DoShortCastling(const Move& move) {
     Piece* rook = board.At({selectedPiece->GetPosition().i, 7});
 
     selectedPiece->DoMove(move);
-    rook->DoMove({Move::TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j - 2});
+    rook->DoMove({MOVE_TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j - 2});
 }
 
 void Game::DoLongCastling(const Move& move) {
     Piece* rook = board.At({selectedPiece->GetPosition().i, 0});
 
     selectedPiece->DoMove(move);
-    rook->DoMove({Move::TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
+    rook->DoMove({MOVE_TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
 }
 
 void Game::CheckForEndOfGame() {
     std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
+    inCheck = false;
 
     if (CheckForCheck(turn)) {
+        std::cout << "To em cheque!" << std::endl;
+        inCheck = true;
+
         // Check for checkmate.
         //if (CheckForCheckmate(piecesOfCurrentTurn)) {
            // FIM DE JOGO.
@@ -265,7 +249,7 @@ bool Game::CheckForCheck(PIECE_COLOR player) {
                                               pieceAtMovePosition->color == turn &&
                                               pieceAtMovePosition->type == PIECE_TYPE::KING;
 
-            bool moveIsAttack = move.type == Move::TYPE::ATTACK || move.type == Move::TYPE::ATTACK_AND_PROMOTION;
+            bool moveIsAttack = move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION;
 
             // If the enemy piece is attacking the players king, the king is in check.
             if (movePositionContainsMyKing && moveIsAttack) {
@@ -286,20 +270,22 @@ bool Game::CheckForCheck(PIECE_COLOR player) {
     }
 
     return true;
-}
+}*/
 
 void Game::FilterMovesThatDoNotRemoveCheck(std::vector<Move>& moves) {
-    for (Move& move : moves) {
-        // criar um novo board
-        // fazer o movimento
-        // pegar o rei nesse board
-        // ver se ele está em cheque
+    for (size_t i = moves.size(); i >= 0; i--) {
+        Board boardCopy = board; // N dá pra fazer isso, tá afetando os pointer
+        DoMove(boardCopy, moves[i]);
+
+        if (CheckForCheck(boardCopy, turn)) {
+            moves.erase(moves.begin() + i);
+        }
     }
-}*/
+}
 
 bool Game::IsAnyMovePossible(const std::vector<Piece*>& pieces) {
     for (Piece* piece : pieces) {
-        if (!piece->GetPossibleMoves(board).empty()) {
+        if (!piece->GetPossibleMoves(board).empty()) { // TODO: FAZER CACHE AQUI!
             return true;
         }
     }
