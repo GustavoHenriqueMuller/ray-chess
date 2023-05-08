@@ -27,7 +27,7 @@ void Renderer::RenderPieces(const Board& board, const std::map<std::string, Text
                 int x = j * Game::CELL_SIZE;
                 int y = i * Game::CELL_SIZE + Game::INFO_BAR_HEIGHT;
 
-                DrawTexture(textures.at(piece->GetTextureName()), x, y, WHITE);
+                DrawTexture(textures.at(piece->GetName()), x, y, WHITE);
             }
         }
     }
@@ -69,7 +69,7 @@ void Renderer::RenderGuideText() {
 
         // Render text.
         int x = (j + 1) * Game::CELL_SIZE - characterSize - padding;
-        int y = Game::WINDOW_HEIGHT - characterSize * 1.75 - padding + Game::INFO_BAR_HEIGHT;
+        int y = Game::WINDOW_HEIGHT - characterSize * 1.75 - padding;
 
         char text[2];
         text[0] = 97 + (7 - j);

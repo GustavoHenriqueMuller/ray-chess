@@ -19,7 +19,10 @@ Game::Game() {
     SetTargetFPS(60);
 
     LoadTextures();
+
+    // Init the board with the pieces and calculate the initial movements for the white player.
     board.Init();
+    CalculateAllPossibleMovements();
 }
 
 void Game::LoadTextures() {
@@ -53,7 +56,7 @@ Game::~Game() {
 }
 
 void Game::Run() {
-    while (!WindowShouldClose() && !isGameOver){
+    while (!WindowShouldClose() && state == GAME_STATE::RUNNING){
         // Input.
         inPromotion ? HandlePromotionInput() : HandleInput();
 
@@ -62,14 +65,19 @@ void Game::Run() {
 
         // Render.
         BeginDrawing();
-            Renderer::ChangeMouseCursor(board, possibleMoves, turn, inPromotion);
+            std::vector<Move> movesOfSelectedPiece;
 
+            if (selectedPiece) {
+                movesOfSelectedPiece = possibleMovesPerPiece.at(selectedPiece->GetName());
+            }
+
+            Renderer::ChangeMouseCursor(board, movesOfSelectedPiece, turn, inPromotion);
             Renderer::Clear();
             Renderer::RenderBackground();
             Renderer::RenderPieces(board, textures);
 
             if (!inPromotion) {
-                Renderer::RenderMovesSelectedPiece(textures, possibleMoves);
+                Renderer::RenderMovesSelectedPiece(textures, movesOfSelectedPiece);
             }
 
             Renderer::RenderGuideText();
@@ -84,12 +92,15 @@ void Game::Run() {
 }
 
 void Game::SwapTurns() {
-    turn = Piece::GetInverseColor(this->turn);
+    turn = Piece::GetInverseColor(turn);
 
     // Advance round.
     if (turn == PIECE_COLOR::C_WHITE) {
         round++;
     }
+
+    // Calculate all possible movements for the current pieces.
+    CalculateAllPossibleMovements();
 
     // Check for stalemates or checkmates. If so, ends the game.
     CheckForEndOfGame();
@@ -106,11 +117,6 @@ void Game::HandleInput() {
         // Select piece.
         if (clickedPiece != nullptr && clickedPiece->color == turn) {
             selectedPiece = clickedPiece;
-            possibleMoves = selectedPiece->GetPossibleMoves(board);
-
-            if (inCheck) {
-                FilterMovesThatDoNotRemoveCheck(possibleMoves);
-            }
         } else {
             // Do movement.
             Move* desiredMove = GetMoveAtPosition(clickedPosition);
@@ -125,7 +131,7 @@ void Game::HandleInput() {
                 desiredMove->type != MOVE_TYPE::ATTACK_AND_PROMOTION)
             ) {
                 selectedPiece = nullptr;
-                possibleMoves.clear();
+                possibleMovesPerPiece.clear();
             }
         }
     }
@@ -147,7 +153,7 @@ void Game::HandlePromotionInput() {
                 newPiece = new Rook(selectedPiece->GetPosition(), selectedPiece->color);
             } else if (clickedPosition.j == 4) { // Clicked bishop.
                 newPiece = new Bishop(selectedPiece->GetPosition(), selectedPiece->color);
-            } else if (clickedPosition.j == 5) { // Clicked knight.
+            } else { // Clicked knight.
                 newPiece = new Knight(selectedPiece->GetPosition(), selectedPiece->color);
             }
 
@@ -159,7 +165,7 @@ void Game::HandlePromotionInput() {
             inPromotion = false;
 
             selectedPiece = nullptr;
-            possibleMoves.clear();
+            possibleMovesPerPiece.clear();
 
             SwapTurns();
         }
@@ -167,9 +173,11 @@ void Game::HandlePromotionInput() {
 }
 
 Move* Game::GetMoveAtPosition(const Position& position) {
-    for (Move& move : possibleMoves) {
-        if (move.position.i == position.i && move.position.j == position.j) {
-            return &move;
+    for (auto& [name, moves] : possibleMovesPerPiece) {
+        for (Move& move : moves) {
+            if (move.position.i == position.i && move.position.j == position.j) {
+                return &move;
+            }
         }
     }
     
@@ -218,28 +226,35 @@ void Game::DoLongCastling(const Move& move) {
     rook->DoMove({MOVE_TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
 }
 
-void Game::CheckForEndOfGame() {
-    std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
-    inCheck = false;
+void Game::CalculateAllPossibleMovements() {
+    possibleMovesPerPiece.clear();
 
-    if (CheckForCheck(turn)) {
-        std::cout << "To em cheque!" << std::endl;
-        inCheck = true;
-
-        // Check for checkmate.
-        //if (CheckForCheckmate(piecesOfCurrentTurn)) {
-           // FIM DE JOGO.
-        //}
-    } else {
-        if (!IsAnyMovePossible(piecesOfCurrentTurn)) {
-            // FIM DE JOGO (afogamento).
-            isGameOver = true; // TODO: MELHORAR ISSO, CRIAR TELA DE ENDSCREEN.
-        }
+    for (Piece* piece : board.GetPiecesByColor(turn)) {
+        possibleMovesPerPiece[piece->GetName()] = piece->GetPossibleMoves(board);
     }
 }
 
-bool Game::CheckForCheck(PIECE_COLOR player) {
-    std::vector<Piece*> enemyPieces = board.GetPiecesByColor(Piece::GetInverseColor(player));
+void Game::CheckForEndOfGame() {
+    std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
+
+    if (CheckForCheck()) {
+        std::cout << "To em cheque!" << std::endl;
+
+        // Remove the moves that do not remove check.
+        FilterMovesThatDoNotRemoveCheck();
+
+        // If there are no moves possible, declare checkmate.
+        if (!IsAnyMovePossible()) {
+            state = (turn == PIECE_COLOR::C_WHITE ? GAME_STATE::BLACK_WINS : GAME_STATE::WHITE_WINS);
+        }
+    } else if (!IsAnyMovePossible()) {
+        // If not in check and there is not any move possible, declare stalemate.
+        state = GAME_STATE::STALEMATE;
+    }
+}
+
+bool Game::CheckForCheck() {
+    std::vector<Piece*> enemyPieces = board.GetPiecesByColor(Piece::GetInverseColor(turn));
 
     for (Piece* piece : enemyPieces) {
         for (const Move& move : piece->GetPossibleMoves(board)) {
@@ -251,7 +266,7 @@ bool Game::CheckForCheck(PIECE_COLOR player) {
 
             bool moveIsAttack = move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION;
 
-            // If the enemy piece is attacking the players king, the king is in check.
+            // If the enemy piece is attacking my king, the king is in check.
             if (movePositionContainsMyKing && moveIsAttack) {
                 return true;
             }
@@ -261,10 +276,14 @@ bool Game::CheckForCheck(PIECE_COLOR player) {
     return false;
 }
 
-/*bool Game::CheckCheckmate(PIECE_COLOR color, const std::vector<Piece*>& pieces) {
-    for (Piece* piece : pieces) {
+/*bool Game::CheckCheckmate() {
+    std::vector<Piece*> myPieces;
+
+    for (Piece* piece : myPieces) {
+        std::vector<Move> piecePossibleMoves = possibleMovesPerPiece.at(piece->GetName());
+
         // If there are moves that remove the check, the king is not in checkmate.
-        if (!FilterMovesThatDoNotRemoveCheck(piece->GetPossibleMoves(board)).empty()) {
+        if (!piecePossibleMoves.empty()) {
             return false;
         }
     }
@@ -272,20 +291,28 @@ bool Game::CheckForCheck(PIECE_COLOR player) {
     return true;
 }*/
 
-void Game::FilterMovesThatDoNotRemoveCheck(std::vector<Move>& moves) {
-    for (size_t i = moves.size(); i >= 0; i--) {
-        Board boardCopy = board; // N dá pra fazer isso, tá afetando os pointer
-        DoMove(boardCopy, moves[i]);
+void Game::FilterMovesThatDoNotRemoveCheck() {
+    for (auto& [pieceName, possibleMoves] : possibleMovesPerPiece) {
+        for (size_t i = possibleMoves.size() - 1; i < possibleMoves.size(); i--) {
+            Board boardBackup = board;
+            Move& move = possibleMoves[i];
 
-        if (CheckForCheck(boardCopy, turn)) {
-            moves.erase(moves.begin() + i);
+            // If the move does not remove the check after being done, remove it from the
+            // vector of possible moves.
+            DoMove(move);
+
+            if (CheckForCheck()) {
+                possibleMoves.erase(possibleMoves.begin() + i);
+            }
+
+            board = boardBackup;
         }
     }
 }
 
-bool Game::IsAnyMovePossible(const std::vector<Piece*>& pieces) {
-    for (Piece* piece : pieces) {
-        if (!piece->GetPossibleMoves(board).empty()) { // TODO: FAZER CACHE AQUI!
+bool Game::IsAnyMovePossible() {
+    for (const auto& [pieceName, possibleMoves] : possibleMovesPerPiece) {
+        if (!possibleMoves.empty()) {
             return true;
         }
     }

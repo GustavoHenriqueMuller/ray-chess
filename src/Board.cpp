@@ -9,8 +9,16 @@
 #include "pieces/King.h"
 
 Board::Board(const Board &other) {
-    for (size_t i = 0; i < whitePieces.size(); i++) {
-        other
+    Clear();
+
+    for (Piece* whitePiece : other.whitePieces) {
+        Piece* newPiece = Piece::CreatePieceByType(whitePiece->type, whitePiece->GetPosition(), whitePiece->color);
+        Add(newPiece);
+    }
+
+    for (Piece* blackPiece : other.blackPieces) {
+        Piece* newPiece = Piece::CreatePieceByType(blackPiece->type, blackPiece->GetPosition(), blackPiece->color);
+        Add(newPiece);
     }
 }
 
@@ -37,7 +45,7 @@ void Board::Init() {
     Add(new King({0, 4}, PIECE_COLOR::C_BLACK));
 
     // Init white pieces (player).
-    for (int j = 0; j < 8; j++) {
+    /*for (int j = 0; j < 8; j++) {
         Add(new Peon({6, j}, PIECE_COLOR::C_WHITE));
     }
 
@@ -50,7 +58,7 @@ void Board::Init() {
     Add(new Bishop({7, 2}, PIECE_COLOR::C_WHITE));
     Add(new Bishop({7, 5}, PIECE_COLOR::C_WHITE));
 
-    Add(new Queen({7, 3}, PIECE_COLOR::C_WHITE));
+    Add(new Queen({7, 3}, PIECE_COLOR::C_WHITE));*/
     Add(new King({7, 4}, PIECE_COLOR::C_WHITE));
 }
 

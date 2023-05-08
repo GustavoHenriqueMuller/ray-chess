@@ -1,4 +1,10 @@
 #include "Piece.h"
+#include "Peon.h"
+#include "Rook.h"
+#include "Knight.h"
+#include "Bishop.h"
+#include "Queen.h"
+#include "King.h"
 
 Piece::Piece(Position position, PIECE_COLOR color, PIECE_TYPE type): position(position), color(color), type(type) {
     std::string colorPrefix = color == PIECE_COLOR::C_WHITE ? "w" : "b";
@@ -16,12 +22,29 @@ Position Piece::GetPosition() {
     return position;
 }
 
-std::string Piece::GetTextureName() {
+std::string Piece::GetName() {
     return textureName;
 }
 
 bool Piece::HasMoved() {
     return hasMoved;
+}
+
+Piece *Piece::CreatePieceByType(PIECE_TYPE type, const Position& position, PIECE_COLOR color) {
+    switch (type) {
+        case PEON:
+            return new Peon(position, color);
+        case ROOK:
+            return new Rook(position, color);
+        case KNIGHT:
+            return new Knight(position, color);
+        case BISHOP:
+            return new Bishop(position, color);
+        case QUEEN:
+            return new Queen(position, color);
+        case KING:
+            return new King(position, color);
+    }
 }
 
 PIECE_COLOR Piece::GetInverseColor(PIECE_COLOR color) {
@@ -44,5 +67,7 @@ std::string Piece::GetPieceCharacterByType(PIECE_TYPE type) {
             return "k";
     }
 }
+
+
 
 

@@ -9,6 +9,13 @@
 #include "raylib.h"
 #include "Move.h"
 
+enum GAME_STATE {
+    RUNNING,
+    WHITE_WINS,
+    BLACK_WINS,
+    STALEMATE
+};
+
 class Game {
 public:
     const static int INFO_BAR_HEIGHT = 32;
@@ -36,10 +43,12 @@ private:
     void DoShortCastling(const Move& move);
     void DoLongCastling(const Move& move);
 
+    void CalculateAllPossibleMovements();
     void CheckForEndOfGame();
-    bool CheckForCheck(PIECE_COLOR player);
-    void FilterMovesThatDoNotRemoveCheck(std::vector<Move>& moves);
-    bool IsAnyMovePossible(const std::vector<Piece*>& pieces);
+    bool CheckForCheck();
+    //bool CheckCheckmate();
+    void FilterMovesThatDoNotRemoveCheck();
+    bool IsAnyMovePossible();
 
     // Game state.
     Board board;
@@ -47,11 +56,10 @@ private:
 
     PIECE_COLOR turn = PIECE_COLOR::C_WHITE;
     Piece* selectedPiece = nullptr;
-    std::vector<Move> possibleMoves;
+    std::map<std::string, std::vector<Move>> possibleMovesPerPiece;
 
     bool inPromotion = false;
-    bool inCheck = false;
-    bool isGameOver = false;
+    GAME_STATE state = GAME_STATE::RUNNING;
 
     // Game information (current round and time).
     int round = 1;
