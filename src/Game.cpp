@@ -186,7 +186,7 @@ void Game::DoMove(const Move& move) {
     }
 
     // In case of promotion, show promotion dialog and stop game.
-    if (move.type == Move::TYPE::PROMOTION) {
+    if (move.type == Move::TYPE::PROMOTION || move.type == Move::TYPE::ATTACK_AND_PROMOTION) {
         MovePiece(selectedPiece, move);
         inPromotion = true;
     } else {
