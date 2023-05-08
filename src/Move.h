@@ -11,7 +11,8 @@ struct Move {
         SHORT_CASTLING,
         LONG_CASTLING,
         EN_PASSANT,
-        PROMOTION
+        PROMOTION,
+        ATTACK_AND_PROMOTION,
     };
 
     TYPE type;

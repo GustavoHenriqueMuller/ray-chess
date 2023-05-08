@@ -17,12 +17,7 @@ std::vector<Move> Peon::GetPossibleMoves(const Board& board) {
     Position walk = {position.i + (color == COLOR::C_BLACK ? +1 : -1), position.j};
 
     if (!board.At(walk)) {
-        // Check for promotion if on first row and white, or last row and black.
-        if ((walk.i == 0 && color == Piece::COLOR::C_WHITE) || walk.i == 7 && color == Piece::COLOR::C_BLACK) {
-            moves.push_back({Move::TYPE::PROMOTION, walk});
-        } else {
-            moves.push_back({Move::TYPE::WALK, walk});
-        }
+        moves.push_back({Move::TYPE::WALK, walk});
     }
 
     // Check for moving two cells, if the peon has not been moved.
@@ -60,7 +55,24 @@ std::vector<Move> Peon::GetPossibleMoves(const Board& board) {
         moves.push_back({Move::TYPE::EN_PASSANT, enPassantAttackRight});
     }
 
+    // Check for promotion.
+    for (Move& move : moves) {
+        // Check for promotion if on first row and white, or last row and black.
+        if (IsPromotionPosition(move.position)) {
+            if (move.type == Move::TYPE::ATTACK) {
+                move.type = Move::TYPE::ATTACK_AND_PROMOTION;
+            } else if (move.type == Move::TYPE::WALK) {
+                move.type = Move::TYPE::PROMOTION;
+            }
+        }
+    }
+
     return moves;
+}
+
+bool Peon::IsPromotionPosition(const Position& position) {
+    return (position.i == 0 && color == Piece::COLOR::C_WHITE) ||
+           (position.i == 7 && color == Piece::COLOR::C_BLACK);
 }
 
 bool Peon::CheckEnPassant(const Board& board, const Position& piecePosition, const Position& attackPosition) {

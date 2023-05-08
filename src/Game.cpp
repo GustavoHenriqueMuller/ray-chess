@@ -180,7 +180,7 @@ void Game::ChangeMouseCursor() {
 
 void Game::DoMove(const Move& move) {
     // Delete piece, if attack or en passant.
-    if (move.type == Move::TYPE::ATTACK) {
+    if (move.type == Move::TYPE::ATTACK || move.type == Move::TYPE::ATTACK_AND_PROMOTION) {
         board.Destroy(move.position);
     } else if (move.type == Move::TYPE::EN_PASSANT) {
         board.Destroy({selectedPiece->GetPosition().i, move.position.j});

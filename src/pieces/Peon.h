@@ -14,6 +14,7 @@ public:
     bool hasOnlyMadeDoubleWalk = false;
 
 private:
+    bool IsPromotionPosition(const Position& position);
     bool CheckEnPassant(const Board& board, const Position& piecePosition, const Position& attackPosition);
 };
 

@@ -120,6 +120,7 @@ std::string Renderer::GetTextureNameFromMoveType(Move::TYPE moveType) {
             return "enpassant";
 
         case Move::TYPE::PROMOTION:
+        case Move::TYPE::ATTACK_AND_PROMOTION:
             return "promotion";
     }
 }
