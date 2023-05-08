@@ -51,7 +51,6 @@ private:
 
     bool inPromotion = false;
     bool inCheck = false;
-
     bool isGameOver = false;
 
     // Game information (current round and time).
