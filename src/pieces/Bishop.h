@@ -10,7 +10,7 @@ public:
     std::vector<Move> GetPossibleMoves(const Board& board) override;
 
 private:
-    void AddValidMoves(std::vector<Move>& moves, Position move, const Board& board, int iIncrement, int jIncrement);
+    void AddValidMoves(const Board& board, std::vector<Move>& moves, Position move, int iIncrement, int jIncrement);
 };
 
 #endif //RAY_CHESS_BISHOP_H

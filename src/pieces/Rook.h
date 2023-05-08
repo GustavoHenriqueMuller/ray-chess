@@ -10,7 +10,7 @@ public:
     std::vector<Move> GetPossibleMoves(const Board& board) override;
 
 private:
-    void AddValidMoves(std::vector<Move>& moves, Position pos, const Board& board, int iIncrement, int jIncrement);
+    void AddValidMoves(const Board& board, std::vector<Move>& moves, Position pos, int iIncrement, int jIncrement);
 };
 
 #endif //RAY_CHESS_ROOK_H
