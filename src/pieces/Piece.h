@@ -26,19 +26,20 @@ public:
         C_BLACK
     };
 
-    Piece(Position position, COLOR color, TYPE type, const Texture& texture): position(position), color(color), type(type), texture(texture) {}
+    Piece(Position position, Piece::COLOR color, Piece::TYPE type);
+
+    static Piece::COLOR GetInverseColor(Piece::COLOR color);
+    static std::string GetPieceCharacterByType(Piece::TYPE type);
 
     virtual void DoMove(const Move& move);
     virtual std::vector<Move> GetPossibleMoves(const Board& board) = 0;
-
-    static Piece::COLOR GetInverseColor(Piece::COLOR color);
 
     Position GetPosition();
     bool HasMoved();
 
     const COLOR color;
     const TYPE type;
-    const Texture& texture;
+    std::string textureName;// TODO
 
 protected:
     Position position;

@@ -14,7 +14,7 @@ public:
     Board();
     ~Board();
 
-    void Init(const std::map<std::string, Texture>& textures);
+    void Init();
     Piece* At(const Position& position) const;
     void Set(const Position& position, Piece* piece);
     void Destroy(const Position &position);

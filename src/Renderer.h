@@ -7,7 +7,7 @@
 class Renderer {
 public:
     static void RenderBackground();
-    static void RenderPieces(const Board& board);
+    static void RenderPieces(const Board& board, const std::map<std::string, Texture>& textures);
     static void RenderMovesSelectedPiece(const std::map<std::string, Texture>& textures, const std::vector<Move>& possibleMoves);
     static void RenderGuideText();
     static void RenderPromotionScreen(const std::map<std::string, Texture>& textures, Piece::COLOR colorOfPeonBeingPromoted);

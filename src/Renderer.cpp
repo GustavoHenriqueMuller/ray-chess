@@ -13,7 +13,7 @@ void Renderer::RenderBackground() {
     }
 }
 
-void Renderer::RenderPieces(const Board& board) {
+void Renderer::RenderPieces(const Board& board, const std::map<std::string, Texture>& textures) {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             Piece* piece = board.At({i, j});
@@ -22,7 +22,7 @@ void Renderer::RenderPieces(const Board& board) {
                 int x = j * Game::CELL_SIZE;
                 int y = i * Game::CELL_SIZE;
 
-                DrawTexture(piece->texture, x, y, WHITE);
+                DrawTexture(textures.at(piece->textureName), x, y, WHITE);
             }
         }
     }

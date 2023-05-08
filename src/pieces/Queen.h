@@ -6,7 +6,7 @@
 
 class Queen : public Piece {
 public:
-    Queen(Position position, COLOR color, const Texture& texture): Piece(position, color, Piece::TYPE::QUEEN, texture) {}
+    Queen(Position position, COLOR color): Piece(position, color, Piece::TYPE::QUEEN) {}
     std::vector<Move> GetPossibleMoves(const Board& board) override;
 
 private:

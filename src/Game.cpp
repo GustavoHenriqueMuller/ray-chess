@@ -18,7 +18,7 @@ Game::Game() {
     SetTargetFPS(60);
 
     LoadTextures();
-    board.Init(textures);
+    board.Init();
 }
 
 void Game::LoadTextures() {
@@ -60,7 +60,7 @@ void Game::Run() {
         // Render.
         BeginDrawing();
             Renderer::RenderBackground();
-            Renderer::RenderPieces(board);
+            Renderer::RenderPieces(board, textures);
 
             if (!inPromotion) {
                 Renderer::RenderMovesSelectedPiece(textures, possibleMoves);
@@ -116,15 +116,14 @@ void Game::HandlePromotionInput() {
         if (clickedPosition.i == 3 && clickedPosition.j >= 2 && clickedPosition.j <= 5) {
             Piece* newPiece;
 
-            // TODO: CONSERTAR AQUI, NÃO PODE CRIAR RAINHA COM WQ, TEM QUE SER GENÉRICO
             if (clickedPosition.j == 2) { // Clicked queen.
-                newPiece = new Queen(selectedPiece->GetPosition(), selectedPiece->color, textures["wq"]);
+                newPiece = new Queen(selectedPiece->GetPosition(), selectedPiece->color);
             } else if (clickedPosition.j == 3) { // Clicked rook.
-                newPiece = new Rook(selectedPiece->GetPosition(), selectedPiece->color, textures["wr"]);
+                newPiece = new Rook(selectedPiece->GetPosition(), selectedPiece->color);
             } else if (clickedPosition.j == 4) { // Clicked bishop.
-                newPiece = new Bishop(selectedPiece->GetPosition(), selectedPiece->color, textures["wb"]);
+                newPiece = new Bishop(selectedPiece->GetPosition(), selectedPiece->color);
             } else if (clickedPosition.j == 5) { // Clicked knight.
-                newPiece = new Knight(selectedPiece->GetPosition(), selectedPiece->color, textures["wn"]);
+                newPiece = new Knight(selectedPiece->GetPosition(), selectedPiece->color);
             }
 
             // Destroy peon, create new piece at same position.
