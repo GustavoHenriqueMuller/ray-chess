@@ -14,8 +14,8 @@ public:
     const static int WINDOW_WIDTH = 640;
     const static int WINDOW_HEIGHT = 640;
     const static int CELL_SIZE = 640 / 8;
-    const static std::string ASSETS_PATH;
 
+    const static std::string ASSETS_PATH;
     const static Color LIGHT_SHADE;
     const static Color DARK_SHADE;
 

@@ -8,7 +8,6 @@
 #include "pieces/Rook.h"
 
 #include <filesystem>
-#include <iostream>
 
 const std::string Game::ASSETS_PATH = "../assets";
 const Color Game::LIGHT_SHADE = Color{240, 217, 181, 255};
