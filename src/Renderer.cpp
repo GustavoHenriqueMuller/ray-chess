@@ -1,6 +1,10 @@
 #include "Renderer.h"
 #include "Game.h"
 
+void Renderer::Clear() {
+    ClearBackground(WHITE);
+}
+
 void Renderer::RenderBackground() {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -139,9 +143,19 @@ PIECE_COLOR Renderer::GetColorOfCell(const Position& cellPosition) {
     return colorIndex == 0 ? PIECE_COLOR::C_WHITE : PIECE_COLOR::C_BLACK;
 }
 
-void Renderer::RenderInfoBar(int round, unsigned long time) {
+void Renderer::RenderInfoBar(int round, double time) {
+    DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::INFO_BAR_HEIGHT, BLACK);
 
+    int padding = 5;
+    std::string roundText = "Round: " + std::to_string(round);
+    std::string timeText = "Time: " + std::to_string((int) time) + "s";
+    int timeTextWidth = MeasureText(timeText.c_str(), 20);
+
+    DrawText(roundText.c_str(), padding, Game::INFO_BAR_HEIGHT / 2 - 10, 20, WHITE);
+    DrawText(timeText.c_str(), Game::WINDOW_WIDTH - timeTextWidth - padding, Game::INFO_BAR_HEIGHT / 2 - 10, 20, WHITE);
 }
+
+
 
 
 

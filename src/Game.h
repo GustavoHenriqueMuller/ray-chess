@@ -53,8 +53,8 @@ private:
     bool isGameOver = false;
 
     // Game information (current round and time).
-    int round = 0;
-    unsigned long time = 0;
+    int round = 1;
+    double time = 0;
 };
 
 #endif //RAY_CHESS_GAME_H

@@ -57,8 +57,12 @@ void Game::Run() {
         inPromotion ? HandlePromotionInput() : HandleInput();
         ChangeMouseCursor();
 
+        // Getting new time.
+        time += GetFrameTime();
+
         // Render.
         BeginDrawing();
+            Renderer::Clear();
             Renderer::RenderBackground();
             Renderer::RenderPieces(board, textures);
 
@@ -78,7 +82,12 @@ void Game::Run() {
 }
 
 void Game::SwapTurns() {
-    this->turn = Piece::GetInverseColor(this->turn);
+    turn = Piece::GetInverseColor(this->turn);
+
+    // Advance round.
+    if (turn == PIECE_COLOR::C_WHITE) {
+        round++;
+    }
 
     // Check for stalemates or checkmates. If so, ends the game.
     CheckForEndOfGame();
@@ -87,6 +96,7 @@ void Game::SwapTurns() {
 void Game::HandleInput() {
     if (IsMouseButtonPressed(0)) {
         Vector2 mousePosition = GetMousePosition();
+        mousePosition.y -= Game::INFO_BAR_HEIGHT;
 
         Position clickedPosition = {int(mousePosition.y) / CELL_SIZE, int(mousePosition.x) / CELL_SIZE};
         Piece* clickedPiece = board.At(clickedPosition);
@@ -118,6 +128,7 @@ void Game::HandleInput() {
 void Game::HandlePromotionInput() {
     if (IsMouseButtonPressed(0)) {
         Vector2 mousePosition = GetMousePosition();
+        mousePosition.y -= Game::INFO_BAR_HEIGHT;
 
         Position clickedPosition = {int(mousePosition.y) / CELL_SIZE, int(mousePosition.x) / CELL_SIZE};
 
