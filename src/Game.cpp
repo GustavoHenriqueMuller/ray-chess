@@ -98,8 +98,11 @@ void Game::HandleInput() {
                 DoMove(*desiredMove);
             }
 
-            // Piece must still be select to render promotion screen.
-            if (!desiredMove || desiredMove->type != Move::TYPE::PROMOTION) {
+            // Piece must still be selected to render promotion screen.
+            if (!desiredMove ||
+               (desiredMove->type != Move::TYPE::PROMOTION &&
+                desiredMove->type != Move::TYPE::ATTACK_AND_PROMOTION)
+            ) {
                 selectedPiece = nullptr;
                 possibleMoves.clear();
             }
