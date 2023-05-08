@@ -146,10 +146,11 @@ PIECE_COLOR Renderer::GetColorOfCell(const Position& cellPosition) {
 void Renderer::RenderInfoBar(int round, double time) {
     DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::INFO_BAR_HEIGHT, BLACK);
 
-    int padding = 5;
     std::string roundText = "Round: " + std::to_string(round);
     std::string timeText = "Time: " + std::to_string((int) time) + "s";
+
     int timeTextWidth = MeasureText(timeText.c_str(), 20);
+    int padding = 5;
 
     DrawText(roundText.c_str(), padding, Game::INFO_BAR_HEIGHT / 2 - 10, 20, WHITE);
     DrawText(timeText.c_str(), Game::WINDOW_WIDTH - timeTextWidth - padding, Game::INFO_BAR_HEIGHT / 2 - 10, 20, WHITE);
