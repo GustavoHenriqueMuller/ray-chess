@@ -7,43 +7,33 @@ class Piece; // Forward declaration (circular dependency).
 #include "../Position.h"
 #include "../Board.h"
 #include "../Move.h"
+#include "PieceEnums.h"
 
 #include <vector>
 
 class Piece {
 public:
-    enum TYPE {
-        PEON,
-        ROOK,
-        KNIGHT,
-        BISHOP,
-        QUEEN,
-        KING
-    };
+    Piece(Position position, PIECE_COLOR color, PIECE_TYPE type);
 
-    enum COLOR {
-        C_WHITE,
-        C_BLACK
-    };
-
-    Piece(Position position, Piece::COLOR color, Piece::TYPE type);
-
-    static Piece::COLOR GetInverseColor(Piece::COLOR color);
-    static std::string GetPieceCharacterByType(Piece::TYPE type);
+    static PIECE_COLOR GetInverseColor(PIECE_COLOR color);
+    static std::string GetPieceCharacterByType(PIECE_TYPE type);
 
     virtual void DoMove(const Move& move);
     virtual std::vector<Move> GetPossibleMoves(const Board& board) = 0;
 
     Position GetPosition();
+    std::string GetTextureName();
     bool HasMoved();
 
-    const COLOR color;
-    const TYPE type;
-    std::string textureName;// TODO
+    const PIECE_COLOR color;
+    const PIECE_TYPE type;
 
 protected:
     Position position;
     bool hasMoved = false;
+
+private:
+    std::string textureName;
 };
 
 #endif //RAY_CHESS_PIECE_H

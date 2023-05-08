@@ -46,7 +46,7 @@ std::vector<Move> King::GetPossibleMoves(const Board &board) {
 bool King::CheckCastling(const Board &board, const Position &position) {
     Piece* piece = board.At(position);
 
-    if (piece && piece->color == color && piece->type == Piece::TYPE::ROOK && !piece->HasMoved() && !hasMoved) {
+    if (piece && piece->color == color && piece->type == PIECE_TYPE::ROOK && !piece->HasMoved() && !hasMoved) {
         //for ()
 
         // TODO: Check for spaces between the king and the rook.

@@ -1,0 +1,18 @@
+#ifndef RAY_CHESS_PIECEENUMS_H
+#define RAY_CHESS_PIECEENUMS_H
+
+enum PIECE_TYPE {
+    PEON,
+    ROOK,
+    KNIGHT,
+    BISHOP,
+    QUEEN,
+    KING
+};
+
+enum PIECE_COLOR {
+    C_WHITE,
+    C_BLACK
+};
+
+#endif //RAY_CHESS_PIECEENUMS_H

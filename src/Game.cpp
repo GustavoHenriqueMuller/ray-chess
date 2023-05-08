@@ -31,7 +31,7 @@ void Game::LoadTextures() {
 
         // Add texture to map of textures.
         std::string fileName = entry.path().filename().string();
-        int dotIndex = fileName.find('.');
+        size_t dotIndex = fileName.find('.');
 
         std::string fileNameWithoutExtension = entry.path().filename().string().substr(0, dotIndex);
         textures[fileNameWithoutExtension] = texture;
@@ -52,7 +52,7 @@ Game::~Game() {
 }
 
 void Game::Run() {
-    while (!WindowShouldClose()){
+    while (!WindowShouldClose() && !isGameOver){
         // Input.
         inPromotion ? HandlePromotionInput() : HandleInput();
         ChangeMouseCursor();
@@ -71,6 +71,8 @@ void Game::Run() {
             if (inPromotion) {
                 Renderer::RenderPromotionScreen(textures, selectedPiece->color);
             }
+
+            Renderer::RenderInfoBar(round, time);
         EndDrawing();
     }
 }
@@ -211,29 +213,38 @@ void Game::DoMove(const Move& move) {
     }
 }
 
+void Game::DoShortCastling(const Move& move) {
+    Piece* rook = board.At({selectedPiece->GetPosition().i, 7});
+
+    selectedPiece->DoMove(move);
+    rook->DoMove({Move::TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j - 2});
+}
+
+void Game::DoLongCastling(const Move& move) {
+    Piece* rook = board.At({selectedPiece->GetPosition().i, 0});
+
+    selectedPiece->DoMove(move);
+    rook->DoMove({Move::TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
+}
+
 void Game::CheckForEndOfGame() {
     std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
 
-    auto isKing = [](Piece* p) { return p->type == Piece::TYPE::KING};
-    auto kingIt = std::find_if(piecesOfCurrentTurn.begin(), piecesOfCurrentTurn.end(), isKing);
-
-    bool whiteInCheck = turn == Piece::COLOR::C_WHITE && CheckForCheck(Piece::COLOR::C_WHITE);
-    bool blackInCheck = turn == Piece::COLOR::C_BLACK && CheckForCheck(Piece::COLOR::C_BLACK);
-
-    if (CheckForCheck()) {
+    if (CheckForCheck(turn)) {
         // Check for checkmate.
-        if (CheckForCheckmate(piecesOfCurrentTurn)) {
+        //if (CheckForCheckmate(piecesOfCurrentTurn)) {
            // FIM DE JOGO.
-        }
+        //}
     } else {
         if (!IsAnyMovePossible(piecesOfCurrentTurn)) {
             // FIM DE JOGO (afogamento).
+            isGameOver = true; // TODO: MELHORAR ISSO, CRIAR TELA DE ENDSCREEN.
         }
     }
 }
 
-bool Game::CheckForCheck() {
-    std::vector<Piece*> enemyPieces = board.GetPiecesByColor(Piece::GetInverseColor(turn));
+bool Game::CheckForCheck(PIECE_COLOR player) {
+    std::vector<Piece*> enemyPieces = board.GetPiecesByColor(Piece::GetInverseColor(player));
 
     for (Piece* piece : enemyPieces) {
         for (const Move& move : piece->GetPossibleMoves(board)) {
@@ -241,7 +252,7 @@ bool Game::CheckForCheck() {
 
             bool movePositionContainsMyKing = pieceAtMovePosition &&
                                               pieceAtMovePosition->color == turn &&
-                                              pieceAtMovePosition->type == Piece::TYPE::KING;
+                                              pieceAtMovePosition->type == PIECE_TYPE::KING;
 
             bool moveIsAttack = move.type == Move::TYPE::ATTACK || move.type == Move::TYPE::ATTACK_AND_PROMOTION;
 
@@ -255,7 +266,7 @@ bool Game::CheckForCheck() {
     return false;
 }
 
-bool Game::CheckCheckmate(const std::vector<Piece*>& pieces) {
+/*bool Game::CheckCheckmate(PIECE_COLOR color, const std::vector<Piece*>& pieces) {
     for (Piece* piece : pieces) {
         // If there are moves that remove the check, the king is not in checkmate.
         if (!FilterMovesThatDoNotRemoveCheck(piece->GetPossibleMoves(board)).empty()) {
@@ -273,7 +284,7 @@ void Game::FilterMovesThatDoNotRemoveCheck(std::vector<Move>& moves) {
         // pegar o rei nesse board
         // ver se ele está em cheque
     }
-}
+}*/
 
 bool Game::IsAnyMovePossible(const std::vector<Piece*>& pieces) {
     for (Piece* piece : pieces) {
@@ -285,19 +296,6 @@ bool Game::IsAnyMovePossible(const std::vector<Piece*>& pieces) {
     return false;
 }
 
-void Game::DoShortCastling(const Move& move) {
-    Piece* rook = board.At({selectedPiece->GetPosition().i, 7});
-
-    selectedPiece->DoMove(move);
-    rook->DoMove({Move::TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j - 2});
-}
-
-void Game::DoLongCastling(const Move& move) {
-    Piece* rook = board.At({selectedPiece->GetPosition().i, 0});
-
-    selectedPiece->DoMove(move);
-    rook->DoMove({Move::TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
-}
 
 
 

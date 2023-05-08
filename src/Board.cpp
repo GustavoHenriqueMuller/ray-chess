@@ -11,37 +11,37 @@
 void Board::Init() {
     // Init black pieces (computer).
     for (int j = 0; j < 8; j++) {
-        Add(new Peon({1, j}, Piece::COLOR::C_BLACK));
+        Add(new Peon({1, j}, PIECE_COLOR::C_BLACK));
     }
 
-    Add(new Rook({0, 0}, Piece::COLOR::C_BLACK));
-    Add(new Rook({0, 7}, Piece::COLOR::C_BLACK));
+    Add(new Rook({0, 0}, PIECE_COLOR::C_BLACK));
+    Add(new Rook({0, 7}, PIECE_COLOR::C_BLACK));
 
-    Add(new Knight({0, 1}, Piece::COLOR::C_BLACK));
-    Add(new Knight({0, 6}, Piece::COLOR::C_BLACK));
+    Add(new Knight({0, 1}, PIECE_COLOR::C_BLACK));
+    Add(new Knight({0, 6}, PIECE_COLOR::C_BLACK));
 
-    Add(new Bishop({0, 2}, Piece::COLOR::C_BLACK));
-    Add(new Bishop({0, 5}, Piece::COLOR::C_BLACK));
+    Add(new Bishop({0, 2}, PIECE_COLOR::C_BLACK));
+    Add(new Bishop({0, 5}, PIECE_COLOR::C_BLACK));
 
-    Add(new Queen({0, 3}, Piece::COLOR::C_BLACK));
-    Add(new King({0, 4}, Piece::COLOR::C_BLACK));
+    Add(new Queen({0, 3}, PIECE_COLOR::C_BLACK));
+    Add(new King({0, 4}, PIECE_COLOR::C_BLACK));
 
     // Init white pieces (player).
     for (int j = 0; j < 8; j++) {
-        Add(new Peon({6, j}, Piece::COLOR::C_WHITE));
+        Add(new Peon({6, j}, PIECE_COLOR::C_WHITE));
     }
 
-    Add(new Rook({7, 0}, Piece::COLOR::C_WHITE));
-    Add(new Rook({7, 7}, Piece::COLOR::C_WHITE));
+    Add(new Rook({7, 0}, PIECE_COLOR::C_WHITE));
+    Add(new Rook({7, 7}, PIECE_COLOR::C_WHITE));
 
-    Add(new Knight({7, 1}, Piece::COLOR::C_WHITE));
-    Add(new Knight({7, 6}, Piece::COLOR::C_WHITE));
+    Add(new Knight({7, 1}, PIECE_COLOR::C_WHITE));
+    Add(new Knight({7, 6}, PIECE_COLOR::C_WHITE));
 
-    Add(new Bishop({7, 2}, Piece::COLOR::C_WHITE));
-    Add(new Bishop({7, 5}, Piece::COLOR::C_WHITE));
+    Add(new Bishop({7, 2}, PIECE_COLOR::C_WHITE));
+    Add(new Bishop({7, 5}, PIECE_COLOR::C_WHITE));
 
-    Add(new Queen({7, 3}, Piece::COLOR::C_WHITE));
-    Add(new King({7, 4}, Piece::COLOR::C_WHITE));
+    Add(new Queen({7, 3}, PIECE_COLOR::C_WHITE));
+    Add(new King({7, 4}, PIECE_COLOR::C_WHITE));
 }
 
 Piece* Board::At(const Position& position) const {
@@ -63,7 +63,7 @@ Piece* Board::At(const Position& position) const {
 }
 
 void Board::Add(Piece* piece) {
-    if (piece->color == Piece::COLOR::C_WHITE) {
+    if (piece->color == PIECE_COLOR::C_WHITE) {
         whitePieces.push_back(piece);
     } else {
         blackPieces.push_back(piece);
@@ -100,8 +100,8 @@ void Board::Clear() {
     }
 }
 
-std::vector<Piece*> Board::GetPiecesByColor(Piece::COLOR color) {
-    if (color == Piece::COLOR::C_WHITE) {
+std::vector<Piece*> Board::GetPiecesByColor(PIECE_COLOR color) {
+    if (color == PIECE_COLOR::C_WHITE) {
         return whitePieces;
     } else {
         return blackPieces;

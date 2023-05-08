@@ -5,7 +5,7 @@ void Renderer::RenderBackground() {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             int x = j * Game::CELL_SIZE;
-            int y = i * Game::CELL_SIZE;
+            int y = i * Game::CELL_SIZE + Game::INFO_BAR_HEIGHT;
 
             Color cellColor = GetShadeColor(GetColorOfCell({i, j}));
             DrawRectangle(x, y, Game::CELL_SIZE, Game::CELL_SIZE, cellColor);
@@ -20,9 +20,9 @@ void Renderer::RenderPieces(const Board& board, const std::map<std::string, Text
 
             if (piece != nullptr) {
                 int x = j * Game::CELL_SIZE;
-                int y = i * Game::CELL_SIZE;
+                int y = i * Game::CELL_SIZE + Game::INFO_BAR_HEIGHT;
 
-                DrawTexture(textures.at(piece->textureName), x, y, WHITE);
+                DrawTexture(textures.at(piece->GetTextureName()), x, y, WHITE);
             }
         }
     }
@@ -33,7 +33,7 @@ void Renderer::RenderMovesSelectedPiece(const std::map<std::string, Texture>& te
         DrawTexture(
             textures.at(GetTextureNameFromMoveType(move.type)),
             move.position.j * Game::CELL_SIZE,
-            move.position.i * Game::CELL_SIZE,
+            move.position.i * Game::CELL_SIZE + Game::INFO_BAR_HEIGHT,
             WHITE
         );
     }
@@ -49,7 +49,7 @@ void Renderer::RenderGuideText() {
 
         // Render text.
         int x = padding;
-        int y = i * Game::CELL_SIZE + padding;
+        int y = i * Game::CELL_SIZE + padding + Game::INFO_BAR_HEIGHT;
 
         char text[2];
         text[0] = 49 + i;
@@ -64,7 +64,7 @@ void Renderer::RenderGuideText() {
 
         // Render text.
         int x = (j + 1) * Game::CELL_SIZE - characterSize - padding;
-        int y = Game::WINDOW_HEIGHT - characterSize * 1.75 - padding;
+        int y = Game::WINDOW_HEIGHT - characterSize * 1.75 - padding + Game::INFO_BAR_HEIGHT;
 
         char text[2];
         text[0] = 97 + (7 - j);
@@ -74,34 +74,37 @@ void Renderer::RenderGuideText() {
     }
 }
 
-void Renderer::RenderPromotionScreen(const std::map<std::string, Texture>& textures, Piece::COLOR colorOfPeon) {
+void Renderer::RenderPromotionScreen(const std::map<std::string, Texture>& textures, PIECE_COLOR colorOfPeon) {
     DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, Color{0, 0, 0, 127});
     DrawText("Promotion", Game::WINDOW_WIDTH / 2 - 98, Game::WINDOW_HEIGHT / 4, 40, WHITE);
 
-    std::string prefix = colorOfPeon == Piece::COLOR::C_WHITE ? "w" : "b";
+    std::string prefix = colorOfPeon == PIECE_COLOR::C_WHITE ? "w" : "b";
+
+    int textureY = Game::CELL_SIZE * 3 + Game::INFO_BAR_HEIGHT;
+    int textY = Game::CELL_SIZE * 4 + 5 + Game::INFO_BAR_HEIGHT;
 
     // Draw queen.
     {
-        DrawTexture(textures.at(prefix + "q"), Game::CELL_SIZE * 2, Game::CELL_SIZE * 3, WHITE);
-        DrawText("Queen", Game::CELL_SIZE * 2 + 9, Game::CELL_SIZE * 4 + 5, 20, WHITE);
+        DrawTexture(textures.at(prefix + "q"), Game::CELL_SIZE * 2, textureY, WHITE);
+        DrawText("Queen", Game::CELL_SIZE * 2 + 9, textY, 20, WHITE);
     }
 
     // Draw rook.
     {
-        DrawTexture(textures.at(prefix + "r"), Game::CELL_SIZE * 3, Game::CELL_SIZE * 3, WHITE);
-        DrawText("Rook", Game::CELL_SIZE * 3 + 14, Game::CELL_SIZE * 4 + 5, 20, WHITE);
+        DrawTexture(textures.at(prefix + "r"), Game::CELL_SIZE * 3, textureY, WHITE);
+        DrawText("Rook", Game::CELL_SIZE * 3 + 14, textY, 20, WHITE);
     }
 
     // Draw bishop.
     {
-        DrawTexture(textures.at(prefix + "b"), Game::CELL_SIZE * 4, Game::CELL_SIZE * 3, WHITE);
-        DrawText("Bishop", Game::CELL_SIZE * 4 + 7, Game::CELL_SIZE * 4 + 5, 20, WHITE);
+        DrawTexture(textures.at(prefix + "b"), Game::CELL_SIZE * 4, textureY, WHITE);
+        DrawText("Bishop", Game::CELL_SIZE * 4 + 7, textY, 20, WHITE);
     }
 
     // Draw knight.
     {
-        DrawTexture(textures.at(prefix + "n"), Game::CELL_SIZE * 5, Game::CELL_SIZE * 3, WHITE);
-        DrawText("Knight", Game::CELL_SIZE * 5 + 9, Game::CELL_SIZE * 4 + 5, 20, WHITE);
+        DrawTexture(textures.at(prefix + "n"), Game::CELL_SIZE * 5, textureY, WHITE);
+        DrawText("Knight", Game::CELL_SIZE * 5 + 9, textY, 20, WHITE);
     }
 }
 
@@ -125,15 +128,19 @@ std::string Renderer::GetTextureNameFromMoveType(Move::TYPE moveType) {
     }
 }
 
-Color Renderer::GetShadeColor(Piece::COLOR color) {
-    return color == Piece::COLOR::C_WHITE ? Game::LIGHT_SHADE : Game::DARK_SHADE;
+Color Renderer::GetShadeColor(PIECE_COLOR color) {
+    return color == PIECE_COLOR::C_WHITE ? Game::LIGHT_SHADE : Game::DARK_SHADE;
 }
 
-Piece::COLOR Renderer::GetColorOfCell(const Position& cellPosition) {
+PIECE_COLOR Renderer::GetColorOfCell(const Position& cellPosition) {
     int startingColorInRow = cellPosition.i % 2 == 0 ? 0 : 1;
     int colorIndex = (startingColorInRow + cellPosition.j) % 2;
 
-    return colorIndex == 0 ? Piece::COLOR::C_WHITE : Piece::COLOR::C_BLACK;
+    return colorIndex == 0 ? PIECE_COLOR::C_WHITE : PIECE_COLOR::C_BLACK;
+}
+
+void Renderer::RenderInfoBar(int round, unsigned long time) {
+
 }
 
 

@@ -6,7 +6,7 @@
 
 class Peon : public Piece {
 public:
-    Peon(Position position, COLOR color): Piece(position, color, Piece::TYPE::PEON) {}
+    Peon(Position position, PIECE_COLOR color): Piece(position, color, PIECE_TYPE::PEON) {}
 
     void DoMove(const Move& move) override;
     std::vector<Move> GetPossibleMoves(const Board& board) override;

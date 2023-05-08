@@ -6,7 +6,7 @@
 
 class Bishop : public Piece {
 public:
-    Bishop(Position position, COLOR color): Piece(position, color, Piece::TYPE::BISHOP) {}
+    Bishop(Position position, PIECE_COLOR color): Piece(position, color, PIECE_TYPE::BISHOP) {}
     std::vector<Move> GetPossibleMoves(const Board& board) override;
 
 private:

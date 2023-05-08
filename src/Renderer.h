@@ -10,12 +10,13 @@ public:
     static void RenderPieces(const Board& board, const std::map<std::string, Texture>& textures);
     static void RenderMovesSelectedPiece(const std::map<std::string, Texture>& textures, const std::vector<Move>& possibleMoves);
     static void RenderGuideText();
-    static void RenderPromotionScreen(const std::map<std::string, Texture>& textures, Piece::COLOR colorOfPeonBeingPromoted);
+    static void RenderPromotionScreen(const std::map<std::string, Texture>& textures, PIECE_COLOR colorOfPeonBeingPromoted);
+    static void RenderInfoBar(int round, unsigned long time);
 
 private:
     static std::string GetTextureNameFromMoveType(Move::TYPE moveType);
-    static Color GetShadeColor(Piece::COLOR color);
-    static Piece::COLOR GetColorOfCell(const Position& cellPosition);
+    static Color GetShadeColor(PIECE_COLOR color);
+    static PIECE_COLOR GetColorOfCell(const Position& cellPosition);
 };
 
 #endif //RAY_CHESS_RENDERER_H

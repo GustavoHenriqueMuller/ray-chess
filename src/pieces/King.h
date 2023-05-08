@@ -6,7 +6,7 @@
 
 class King : public Piece {
 public:
-    King(Position position, COLOR color): Piece(position, color, Piece::TYPE::KING) {}
+    King(Position position, PIECE_COLOR color): Piece(position, color, PIECE_TYPE::KING) {}
     std::vector<Move> GetPossibleMoves(const Board& board) override;
 
 private:

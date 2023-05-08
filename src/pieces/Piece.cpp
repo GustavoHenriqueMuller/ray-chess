@@ -1,7 +1,7 @@
 #include "Piece.h"
 
-Piece::Piece(Position position, Piece::COLOR color, Piece::TYPE type): position(position), color(color), type(type) {
-    std::string colorPrefix = color == Piece::COLOR::C_WHITE ? "w" : "b";
+Piece::Piece(Position position, PIECE_COLOR color, PIECE_TYPE type): position(position), color(color), type(type) {
+    std::string colorPrefix = color == PIECE_COLOR::C_WHITE ? "w" : "b";
     std::string pieceCharacter = GetPieceCharacterByType(type);
 
     this->textureName = colorPrefix + pieceCharacter;
@@ -16,15 +16,19 @@ Position Piece::GetPosition() {
     return position;
 }
 
+std::string Piece::GetTextureName() {
+    return textureName;
+}
+
 bool Piece::HasMoved() {
     return hasMoved;
 }
 
-Piece::COLOR Piece::GetInverseColor(Piece::COLOR color) {
-    return color == Piece::COLOR::C_WHITE ? Piece::COLOR::C_BLACK : Piece::COLOR::C_WHITE;
+PIECE_COLOR Piece::GetInverseColor(PIECE_COLOR color) {
+    return color == PIECE_COLOR::C_WHITE ? PIECE_COLOR::C_BLACK : PIECE_COLOR::C_WHITE;
 }
 
-std::string Piece::GetPieceCharacterByType(Piece::TYPE type) {
+std::string Piece::GetPieceCharacterByType(PIECE_TYPE type) {
     switch (type) {
         case PEON:
             return "p";
@@ -40,3 +44,5 @@ std::string Piece::GetPieceCharacterByType(Piece::TYPE type) {
             return "k";
     }
 }
+
+

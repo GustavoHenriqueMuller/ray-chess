@@ -25,7 +25,7 @@ endif()
 
 # Our Project
 
-add_executable(${PROJECT_NAME} src/Main.cpp src/Game.cpp src/Game.h src/pieces/Piece.h src/Position.h src/pieces/Peon.cpp src/pieces/Peon.h src/Board.h src/Board.cpp src/pieces/Rook.cpp src/pieces/Rook.h src/pieces/Piece.cpp src/pieces/Knight.cpp src/pieces/Knight.h src/pieces/Bishop.cpp src/pieces/Bishop.h src/pieces/Queen.cpp src/pieces/Queen.h src/pieces/King.cpp src/pieces/King.h src/Move.h src/Renderer.cpp src/Renderer.h)
+add_executable(${PROJECT_NAME} src/Main.cpp src/Game.cpp src/Game.h src/pieces/Piece.h src/Position.h src/pieces/Peon.cpp src/pieces/Peon.h src/Board.h src/Board.cpp src/pieces/Rook.cpp src/pieces/Rook.h src/pieces/Piece.cpp src/pieces/Knight.cpp src/pieces/Knight.h src/pieces/Bishop.cpp src/pieces/Bishop.h src/pieces/Queen.cpp src/pieces/Queen.h src/pieces/King.cpp src/pieces/King.h src/Move.h src/Renderer.cpp src/Renderer.h src/pieces/PieceEnums.h)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
 
