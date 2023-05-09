@@ -39,14 +39,15 @@ private:
     void HandlePromotionInput();
     Move* GetMoveAtPosition(const Position& position);
 
-    void DoMove(const Move& move);
+    void DoMove(const Move& move, bool doPromotion = true, bool swapTurns = true);
     void DoShortCastling(const Move& move);
     void DoLongCastling(const Move& move);
 
     void CalculateAllPossibleMovements();
     void CheckForEndOfGame();
     bool CheckForCheck();
-    void FilterMovesThatDoNotRemoveCheck();
+    void FilterMovesThatAttackOppositeKing();
+    void FilterMovesThatLeadToCheck();
     bool IsAnyMovePossible();
 
     // Game state.

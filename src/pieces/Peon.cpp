@@ -23,7 +23,7 @@ std::vector<Move> Peon::GetPossibleMoves(const Board& board) {
     // Check for moving two cells, if the peon has not been moved.
     Position twoCellWalk = {position.i + (color == PIECE_COLOR::C_BLACK ? +2 : -2), position.j};
 
-    if (!board.At(twoCellWalk) && !board.At(twoCellWalk) && !this->hasMoved) {
+    if (!board.At(twoCellWalk) && !this->hasMoved) {
         moves.push_back({MOVE_TYPE::DOUBLE_WALK, twoCellWalk});
     }
 

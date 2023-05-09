@@ -183,7 +183,7 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     return nullptr;
 }
 
-void Game::DoMove(const Move& move) {
+void Game::DoMove(const Move& move, bool doPromotion, bool swapTurns) {
     // Delete piece, if attack or en passant.
     if (move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
         board.Destroy(move.position);
@@ -194,7 +194,10 @@ void Game::DoMove(const Move& move) {
     // In case of promotion, show promotion dialog and stop game.
     if (move.type == MOVE_TYPE::PROMOTION || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
         selectedPiece->DoMove(move);
-        inPromotion = true;
+
+        if (doPromotion) {
+            inPromotion = true;
+        }
     } else {
         // Move piece. In case of castling, also move rook.
         if (move.type == MOVE_TYPE::SHORT_CASTLING) {
@@ -207,7 +210,9 @@ void Game::DoMove(const Move& move) {
         }
 
         // Swap turns.
-        SwapTurns();
+        if (swapTurns) {
+            SwapTurns();
+        }
     }
 }
 
@@ -231,16 +236,19 @@ void Game::CalculateAllPossibleMovements() {
     for (Piece* piece : board.GetPiecesByColor(turn)) {
         possibleMovesPerPiece[piece] = piece->GetPossibleMoves(board);
     }
+
+    // Remove the moves that could destroy the opponent's king.
+    FilterMovesThatAttackOppositeKing();
+
+    // Remove the moves that cause the player to get in check.
+    FilterMovesThatLeadToCheck();
 }
 
 void Game::CheckForEndOfGame() {
     std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
 
     if (CheckForCheck()) {
-        // Remove the moves that do not remove check.
-        FilterMovesThatDoNotRemoveCheck();
-
-        // If there are no moves possible, declare checkmate.
+        // If there are no moves possible and in check, declare checkmate.
         if (!IsAnyMovePossible()) {
             state = (turn == PIECE_COLOR::C_WHITE ? GAME_STATE::BLACK_WINS : GAME_STATE::WHITE_WINS);
         }
@@ -273,23 +281,64 @@ bool Game::CheckForCheck() {
     return false;
 }
 
-void Game::FilterMovesThatDoNotRemoveCheck() {
-    for (auto& [pieceName, possibleMoves] : possibleMovesPerPiece) {
-        for (size_t i = possibleMoves.size() - 1; i >= 0; i--) {
-            // TODO: ARRUMAR ISSO
-
-            Board boardBackup = board;
+void Game::FilterMovesThatAttackOppositeKing() {
+    for (auto& [piece, possibleMoves] : possibleMovesPerPiece) {
+        for (int i = possibleMoves.size() - 1; i >= 0; i--) {
             Move& move = possibleMoves[i];
+
+            // Remove moves that attack the opponent's king.
+            bool isAttackMove = move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION;
+
+            if (isAttackMove) {
+                Piece* attackedPiece = board.At(move.position);
+
+                if (attackedPiece->type == PIECE_TYPE::KING && attackedPiece->color != turn) {
+                    possibleMoves.erase(possibleMoves.begin() + i);
+                }
+            }
+        }
+    }
+}
+
+void Game::FilterMovesThatLeadToCheck() {
+    for (auto& [piece, possibleMoves] : possibleMovesPerPiece) {
+        for (int i = possibleMoves.size() - 1; i >= 0; i--) {
+            // Copy current board and current selected piece.
+            Board boardCopy = board;
+            Piece* currentSelectedPiece = selectedPiece;
+
+            // Perform the move.
+            Move& move = possibleMoves[i];
+            selectedPiece = piece;
+
+            DoMove(move, false, false);
+
+            // Restore old board.
+            selectedPiece = currentSelectedPiece;
+            board = boardCopy;
+
+            // TODO: ARRUMAR ISSO
+            /*
+
+            Board boardCopy = board;
+            Piece* selectedPieceCopy = selectedPiece;
+
+            selectedPiece = piece;
+
+            Move& move = possibleMoves[i];
+
+            DoMove(move, false, false);
 
             // If the move does not remove the check after being done, remove it from the
             // vector of possible moves.
             // DoMove(move);
 
             if (CheckForCheck()) {
-                //possibleMoves.erase(possibleMoves.begin() + i);
+                possibleMoves.erase(possibleMoves.begin() + i);
             }
 
-            board = boardBackup;
+            board = boardCopy;
+            selectedPiece = selectedPieceCopy;*/
         }
     }
 }
@@ -303,6 +352,8 @@ bool Game::IsAnyMovePossible() {
 
     return false;
 }
+
+
 
 
 
