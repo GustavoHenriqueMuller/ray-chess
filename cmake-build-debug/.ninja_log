@@ -36,3 +36,7 @@
 7	632	7053636882096931	CMakeFiles/ray_chess.dir/src/pieces/Rook.cpp.obj	da9b3daf4d4a4590
 15	716	7053636882674424	CMakeFiles/ray_chess.dir/src/pieces/Knight.cpp.obj	491383286478c916
 22	653	7053636882321930	CMakeFiles/ray_chess.dir/src/pieces/Bishop.cpp.obj	cdb7bc044434cdc6
+3	1109	7053643101616265	CMakeFiles/ray_chess.dir/src/Game.cpp.obj	e81708a3692bc6a7
+1110	1449	7053643104984033	ray_chess.exe	8b2ffb118957257b
+4	506	7053643581227485	CMakeFiles/ray_chess.dir/src/Renderer.cpp.obj	acc0e1efa2d2d2f6
+506	828	7053643584392783	ray_chess.exe	8b2ffb118957257b

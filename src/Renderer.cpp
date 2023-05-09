@@ -127,7 +127,7 @@ void Renderer::RenderInfoBar(int round, double time) {
 }
 
 void Renderer::RenderEndScreen(GAME_STATE state) {
-    DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::INFO_BAR_HEIGHT, BLACK);
+    DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT, Color{0, 0, 0, 127});
 
     const char* text;
 
@@ -139,8 +139,8 @@ void Renderer::RenderEndScreen(GAME_STATE state) {
         text = "Stalemate";
     }
 
-    int textLength = MeasureText(text, 20);
-    DrawText(text, Game::WINDOW_WIDTH / 2 - textLength / 2, Game::WINDOW_HEIGHT / 2, 20, WHITE);
+    int textLength = MeasureText(text, 40);
+    DrawText(text, Game::WINDOW_WIDTH / 2 - textLength / 2, Game::WINDOW_HEIGHT / 2, 40, WHITE);
 }
 
 void Renderer::ChangeMouseCursor(const Board& board, const std::vector<Move>& possibleMoves, PIECE_COLOR turn, bool inPromotion) {

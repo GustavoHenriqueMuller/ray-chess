@@ -58,10 +58,18 @@ Game::~Game() {
 void Game::Run() {
     while (!WindowShouldClose()){
         // Input.
-        inPromotion ? HandlePromotionInput() : HandleInput();
+        if (state == GAME_STATE::RUNNING) {
+            if (inPromotion) {
+                HandlePromotionInput();
+            } else {
+                HandleInput();
+            }
+        }
 
         // Getting new time.
-        time += GetFrameTime();
+        if (state == GAME_STATE::RUNNING) {
+            time += GetFrameTime();
+        }
 
         // Render.
         BeginDrawing();
