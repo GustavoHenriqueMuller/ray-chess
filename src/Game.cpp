@@ -20,7 +20,7 @@ Game::Game() {
 
     LoadTextures();
 
-    // Init the board with the pieces and calculate the initial movements for the white player.
+    // Init the board and calculate the initial movements for the white player.
     board.Init();
     CalculateAllPossibleMovements();
 }
@@ -261,7 +261,7 @@ void Game::CalculateAllPossibleMovements() {
 void Game::CheckForEndOfGame() {
     std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
 
-    if (CheckForCheck(board)) {
+    if (IsInCheck(board)) {
         // If there are no moves possible and in check, declare checkmate.
         if (!IsAnyMovePossible()) {
             state = (turn == PIECE_COLOR::C_WHITE ? GAME_STATE::BLACK_WINS : GAME_STATE::WHITE_WINS);
@@ -272,7 +272,7 @@ void Game::CheckForEndOfGame() {
     }
 }
 
-bool Game::CheckForCheck(const Board& targetBoard) {
+bool Game::IsInCheck(const Board& targetBoard) {
     std::vector<Piece*> enemyPieces = targetBoard.GetPiecesByColor(Piece::GetInverseColor(turn));
 
     for (Piece* piece : enemyPieces) {
@@ -327,7 +327,7 @@ void Game::FilterMovesThatLeadToCheck() {
 
             DoMove(boardCopy, move, false, false);
 
-            if (CheckForCheck(boardCopy)) {
+            if (IsInCheck(boardCopy)) {
                 possibleMoves.erase(possibleMoves.begin() + i);
             }
 

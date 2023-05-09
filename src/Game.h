@@ -45,7 +45,7 @@ private:
 
     void CalculateAllPossibleMovements();
     void CheckForEndOfGame();
-    bool CheckForCheck(const Board& targetBoard);
+    bool IsInCheck(const Board& targetBoard);
     void FilterMovesThatAttackOppositeKing();
     void FilterMovesThatLeadToCheck();
     bool IsAnyMovePossible();
