@@ -14,6 +14,7 @@ class Piece; // Forward declaration (circular dependency).
 class Piece {
 public:
     Piece(Position position, PIECE_COLOR color, PIECE_TYPE type);
+    virtual ~Piece() = default;
 
     static Piece* CreatePieceByType(PIECE_TYPE type, const Position& position, PIECE_COLOR color);
     static PIECE_COLOR GetInverseColor(PIECE_COLOR color);

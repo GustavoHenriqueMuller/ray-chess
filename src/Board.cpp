@@ -11,6 +11,7 @@
 Board::Board(const Board& other) {
     Clear();
 
+    // TODO AQUI
     for (Piece* whitePiece : other.whitePieces) {
         Piece* newPiece = Piece::CreatePieceByType(whitePiece->type, whitePiece->GetPosition(), whitePiece->color);
         Add(newPiece);
@@ -119,7 +120,7 @@ void Board::Clear() {
     blackPieces.clear();
 }
 
-std::vector<Piece*> Board::GetPiecesByColor(PIECE_COLOR color) {
+std::vector<Piece*> Board::GetPiecesByColor(PIECE_COLOR color) const {
     if (color == PIECE_COLOR::C_WHITE) {
         return whitePieces;
     } else {

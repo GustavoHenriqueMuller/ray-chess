@@ -24,7 +24,7 @@ public:
     void Clear();
     bool IsPositionWithinBoundaries(const Position& position) const;
 
-    std::vector<Piece*> GetPiecesByColor(PIECE_COLOR color);
+    std::vector<Piece*> GetPiecesByColor(PIECE_COLOR color) const;
 
 private:
     std::vector<Piece*> whitePieces;

@@ -91,21 +91,6 @@ void Game::Run() {
     }
 }
 
-void Game::SwapTurns() {
-    turn = Piece::GetInverseColor(turn);
-
-    // Advance round.
-    if (turn == PIECE_COLOR::C_WHITE) {
-        round++;
-    }
-
-    // Calculate all possible movements for the current pieces.
-    CalculateAllPossibleMovements();
-
-    // Check for stalemates or checkmates. If so, ends the game.
-    CheckForEndOfGame();
-}
-
 void Game::HandleInput() {
     if (IsMouseButtonPressed(0)) {
         Vector2 mousePosition = GetMousePosition();
@@ -122,7 +107,7 @@ void Game::HandleInput() {
             Move* desiredMove = GetMoveAtPosition(clickedPosition);
 
             if (desiredMove && selectedPiece != nullptr) {
-                DoMove(*desiredMove);
+                DoMove(board, *desiredMove);
             }
 
             // Piece must still be selected to render promotion screen.
@@ -183,12 +168,12 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     return nullptr;
 }
 
-void Game::DoMove(const Move& move, bool doPromotion, bool swapTurns) {
+void Game::DoMove(Board& targetBoard, const Move& move, bool doPromotion, bool swapTurns) {
     // Delete piece, if attack or en passant.
     if (move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
-        board.Destroy(move.position);
+        targetBoard.Destroy(move.position);
     } else if (move.type == MOVE_TYPE::EN_PASSANT) {
-        board.Destroy({selectedPiece->GetPosition().i, move.position.j});
+        targetBoard.Destroy({selectedPiece->GetPosition().i, move.position.j});
     }
 
     // In case of promotion, show promotion dialog and stop game.
@@ -201,9 +186,9 @@ void Game::DoMove(const Move& move, bool doPromotion, bool swapTurns) {
     } else {
         // Move piece. In case of castling, also move rook.
         if (move.type == MOVE_TYPE::SHORT_CASTLING) {
-            DoShortCastling(move);
+            DoShortCastling(targetBoard, move);
         } else if (move.type == MOVE_TYPE::LONG_CASTLING) {
-            DoLongCastling(move);
+            DoLongCastling(targetBoard, move);
         } else {
             // Swap positions.
             selectedPiece->DoMove(move);
@@ -216,18 +201,33 @@ void Game::DoMove(const Move& move, bool doPromotion, bool swapTurns) {
     }
 }
 
-void Game::DoShortCastling(const Move& move) {
-    Piece* rook = board.At({selectedPiece->GetPosition().i, 7});
+void Game::DoShortCastling(const Board& targetBoard, const Move& move) {
+    Piece* rook = targetBoard.At({selectedPiece->GetPosition().i, 7});
 
     selectedPiece->DoMove(move);
     rook->DoMove({MOVE_TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j - 2});
 }
 
-void Game::DoLongCastling(const Move& move) {
-    Piece* rook = board.At({selectedPiece->GetPosition().i, 0});
+void Game::DoLongCastling(const Board& targetBoard, const Move& move) {
+    Piece* rook = targetBoard.At({selectedPiece->GetPosition().i, 0});
 
     selectedPiece->DoMove(move);
     rook->DoMove({MOVE_TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
+}
+
+void Game::SwapTurns() {
+    turn = Piece::GetInverseColor(turn);
+
+    // Advance round.
+    if (turn == PIECE_COLOR::C_WHITE) {
+        round++;
+    }
+
+    // Calculate all possible movements for the current pieces.
+    CalculateAllPossibleMovements();
+
+    // Check for stalemates or checkmates. If so, ends the game.
+    CheckForEndOfGame();
 }
 
 void Game::CalculateAllPossibleMovements() {
@@ -247,7 +247,7 @@ void Game::CalculateAllPossibleMovements() {
 void Game::CheckForEndOfGame() {
     std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
 
-    if (CheckForCheck()) {
+    if (CheckForCheck(board)) {
         // If there are no moves possible and in check, declare checkmate.
         if (!IsAnyMovePossible()) {
             state = (turn == PIECE_COLOR::C_WHITE ? GAME_STATE::BLACK_WINS : GAME_STATE::WHITE_WINS);
@@ -258,12 +258,12 @@ void Game::CheckForEndOfGame() {
     }
 }
 
-bool Game::CheckForCheck() {
-    std::vector<Piece*> enemyPieces = board.GetPiecesByColor(Piece::GetInverseColor(turn));
+bool Game::CheckForCheck(const Board& targetBoard) {
+    std::vector<Piece*> enemyPieces = targetBoard.GetPiecesByColor(Piece::GetInverseColor(turn));
 
     for (Piece* piece : enemyPieces) {
-        for (const Move& move : piece->GetPossibleMoves(board)) {
-            Piece* pieceAtMovePosition = board.At(move.position);
+        for (const Move& move : piece->GetPossibleMoves(targetBoard)) {
+            Piece* pieceAtMovePosition = targetBoard.At(move.position);
 
             bool movePositionContainsMyKing = pieceAtMovePosition &&
                                               pieceAtMovePosition->color == turn &&
@@ -309,36 +309,17 @@ void Game::FilterMovesThatLeadToCheck() {
 
             // Perform the move.
             Move& move = possibleMoves[i];
-            selectedPiece = piece;
+            selectedPiece = boardCopy.At(piece->GetPosition());
 
-            DoMove(move, false, false);
+            DoMove(boardCopy, move, false, false);
 
-            // Restore old board.
-            selectedPiece = currentSelectedPiece;
-            board = boardCopy;
-
-            // TODO: ARRUMAR ISSO
-            /*
-
-            Board boardCopy = board;
-            Piece* selectedPieceCopy = selectedPiece;
-
-            selectedPiece = piece;
-
-            Move& move = possibleMoves[i];
-
-            DoMove(move, false, false);
-
-            // If the move does not remove the check after being done, remove it from the
-            // vector of possible moves.
-            // DoMove(move);
-
-            if (CheckForCheck()) {
+            // TODO: FAZER LÓGICA DE CHEQUE
+            if (CheckForCheck(boardCopy)) {
                 possibleMoves.erase(possibleMoves.begin() + i);
             }
 
-            board = boardCopy;
-            selectedPiece = selectedPieceCopy;*/
+            // Restore old board.
+            selectedPiece = currentSelectedPiece;
         }
     }
 }
