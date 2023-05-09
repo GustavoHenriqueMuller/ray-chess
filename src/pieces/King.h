@@ -10,7 +10,7 @@ public:
     std::vector<Move> GetPossibleMoves(const Board& board) override;
 
 private:
-    bool CheckCastling(const Board& board, const Position& position);
+    bool CheckCastling(const Board &board, const Position& rookPosition, const std::vector<Position>& intermediatePositions);
 };
 
 #endif //RAY_CHESS_KING_H

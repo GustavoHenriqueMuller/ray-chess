@@ -33,12 +33,12 @@ std::vector<Move> King::GetPossibleMoves(const Board &board) {
     }
 
     // Check for long castling (left rook).
-    if (CheckCastling(board, {position.i, 0})) {
+    if (CheckCastling(board, {position.i, 0}, {{position.i, 1}, {position.i, 2}, {position.i, 3}})) {
         possibleMoves.push_back({MOVE_TYPE::LONG_CASTLING, {position.i, 2}});
     }
 
     // Check for short castling (right rook).
-    if (CheckCastling(board, {position.i, 7})) {
+    if (CheckCastling(board, {position.i, 7}, {{position.i, 5}, {position.i, 6}})) {
         possibleMoves.push_back({MOVE_TYPE::SHORT_CASTLING, {position.i, 6}});
     }
 
@@ -52,15 +52,19 @@ std::vector<Move> King::GetPossibleMoves(const Board &board) {
     return possibleMoves;
 }
 
-bool King::CheckCastling(const Board &board, const Position &position) {
-    Piece* piece = board.At(position);
+bool King::CheckCastling(const Board &board, const Position& rookPosition, const std::vector<Position>& intermediatePositions) {
+    Piece* piece = board.At(rookPosition);
 
-    if (piece && piece->color == color && piece->type == PIECE_TYPE::ROOK && !piece->HasMoved() && !hasMoved) {
-        //for ()
-
-        // TODO: Check for spaces between the king and the rook.
-        return true;
+    if (!piece || piece->color != color || piece->type != PIECE_TYPE::ROOK || piece->HasMoved() || hasMoved) {
+        return false;
     }
 
-    return false;
+    // Check positions between the king and the right rook.
+    for (const Position& position : intermediatePositions) {
+        if (board.At(position)) {
+            return false;
+        }
+    }
+
+    return true;
 }

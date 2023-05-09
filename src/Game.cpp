@@ -182,7 +182,6 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     return nullptr;
 }
 
-// TODO: MOVER PRA CLASSE BOARD
 void Game::DoMove(Board& targetBoard, const Move& move, bool doPromotion, bool swapTurns) {
     // Delete piece, if attack or en passant.
     if (move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {

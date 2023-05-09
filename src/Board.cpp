@@ -11,7 +11,6 @@
 Board::Board(const Board& other) {
     Clear();
 
-    // TODO AQUI
     for (Piece* whitePiece : other.whitePieces) {
         Piece* newPiece = Piece::CreatePieceByType(whitePiece->type, whitePiece->GetPosition(), whitePiece->color);
         Add(newPiece);
@@ -46,20 +45,20 @@ void Board::Init() {
     Add(new King({0, 4}, PIECE_COLOR::C_BLACK));
 
     // Init white pieces (player).
-    /*for (int j = 0; j < 8; j++) {
-        Add(new Peon({6, j}, PIECE_COLOR::C_WHITE));
-    }
+//    for (int j = 0; j < 8; j++) {
+//        Add(new Peon({6, j}, PIECE_COLOR::C_WHITE));
+    //}
 
     Add(new Rook({7, 0}, PIECE_COLOR::C_WHITE));
     Add(new Rook({7, 7}, PIECE_COLOR::C_WHITE));
 
-    Add(new Knight({7, 1}, PIECE_COLOR::C_WHITE));
-    Add(new Knight({7, 6}, PIECE_COLOR::C_WHITE));
+    //Add(new Knight({7, 1}, PIECE_COLOR::C_WHITE));
+    //Add(new Knight({7, 6}, PIECE_COLOR::C_WHITE));
 
     Add(new Bishop({7, 2}, PIECE_COLOR::C_WHITE));
-    Add(new Bishop({7, 5}, PIECE_COLOR::C_WHITE));
+    //Add(new Bishop({7, 5}, PIECE_COLOR::C_WHITE));
 
-    Add(new Queen({7, 3}, PIECE_COLOR::C_WHITE));*/
+    //Add(new Queen({7, 3}, PIECE_COLOR::C_WHITE));
     Add(new King({7, 4}, PIECE_COLOR::C_WHITE));
 }
 
