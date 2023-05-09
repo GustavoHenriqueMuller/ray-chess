@@ -161,10 +161,12 @@ void Game::HandlePromotionInput() {
 }
 
 Move* Game::GetMoveAtPosition(const Position& position) {
-    for (auto& [name, moves] : possibleMovesPerPiece) {
-        for (Move& move : moves) {
-            if (move.position.i == position.i && move.position.j == position.j) {
-                return &move;
+    for (auto& [piece, moves] : possibleMovesPerPiece) {
+        if (piece == selectedPiece) {
+            for (Move& move : moves) {
+                if (move.position.i == position.i && move.position.j == position.j) {
+                    return &move;
+                }
             }
         }
     }
