@@ -56,7 +56,7 @@ Game::~Game() {
 }
 
 void Game::Run() {
-    while (!WindowShouldClose() && state == GAME_STATE::RUNNING){
+    while (!WindowShouldClose()){
         // Input.
         inPromotion ? HandlePromotionInput() : HandleInput();
 
@@ -87,6 +87,10 @@ void Game::Run() {
             }
 
             Renderer::RenderInfoBar(round, time);
+
+            if (state != GAME_STATE::RUNNING) {
+                Renderer::RenderEndScreen(state);
+            }
         EndDrawing();
     }
 }
@@ -168,6 +172,7 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     return nullptr;
 }
 
+// TODO: MOVER PRA CLASSE BOARD
 void Game::DoMove(Board& targetBoard, const Move& move, bool doPromotion, bool swapTurns) {
     // Delete piece, if attack or en passant.
     if (move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
@@ -313,7 +318,6 @@ void Game::FilterMovesThatLeadToCheck() {
 
             DoMove(boardCopy, move, false, false);
 
-            // TODO: FAZER LÓGICA DE CHEQUE
             if (CheckForCheck(boardCopy)) {
                 possibleMoves.erase(possibleMoves.begin() + i);
             }

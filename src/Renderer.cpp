@@ -126,6 +126,23 @@ void Renderer::RenderInfoBar(int round, double time) {
     DrawText(timeText.c_str(), Game::WINDOW_WIDTH - timeTextWidth - padding, Game::INFO_BAR_HEIGHT / 2 - 10, 20, WHITE);
 }
 
+void Renderer::RenderEndScreen(GAME_STATE state) {
+    DrawRectangle(0, 0, Game::WINDOW_WIDTH, Game::INFO_BAR_HEIGHT, BLACK);
+
+    const char* text;
+
+    if (state == GAME_STATE::WHITE_WINS) {
+        text = "White wins";
+    } else if (state == GAME_STATE::BLACK_WINS) {
+        text = "Black wins";
+    } else if (state == GAME_STATE::STALEMATE) {
+        text = "Stalemate";
+    }
+
+    int textLength = MeasureText(text, 20);
+    DrawText(text, Game::WINDOW_WIDTH / 2 - textLength / 2, Game::WINDOW_HEIGHT / 2, 20, WHITE);
+}
+
 void Renderer::ChangeMouseCursor(const Board& board, const std::vector<Move>& possibleMoves, PIECE_COLOR turn, bool inPromotion) {
     Vector2 mousePosition = GetMousePosition();
     mousePosition.y -= Game::INFO_BAR_HEIGHT;
@@ -184,6 +201,7 @@ PIECE_COLOR Renderer::GetColorOfCell(const Position& cellPosition) {
 
     return colorIndex == 0 ? PIECE_COLOR::C_WHITE : PIECE_COLOR::C_BLACK;
 }
+
 
 
 
