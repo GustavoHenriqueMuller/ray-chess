@@ -11,14 +11,20 @@
 #include <iostream>
 
 const std::string Game::ASSETS_PATH = "../assets";
+const std::string Game::TEXTURES_PATH = Game::ASSETS_PATH + "/textures";
+const std::string Game::SOUNDS_PATH = Game::ASSETS_PATH + "/sounds";
+
 const Color Game::LIGHT_SHADE = Color{240, 217, 181, 255};
 const Color Game::DARK_SHADE = Color{181, 136, 99, 255};
 
 Game::Game() {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RayChess");
+    InitAudioDevice();
+
     SetTargetFPS(60);
 
     LoadTextures();
+    LoadSounds();
 
     // Init the board and calculate the initial movements for the white player.
     board.Init();
@@ -26,7 +32,7 @@ Game::Game() {
 }
 
 void Game::LoadTextures() {
-    for (const auto & entry : std::filesystem::directory_iterator(ASSETS_PATH)) {
+    for (const auto & entry : std::filesystem::directory_iterator(TEXTURES_PATH)) {
         // Load and resize image.
         Image image = LoadImage(entry.path().string().c_str());
         ImageResize(&image, CELL_SIZE, CELL_SIZE);
@@ -45,13 +51,34 @@ void Game::LoadTextures() {
     }
 }
 
+void Game::LoadSounds() {
+    for (const auto & entry : std::filesystem::directory_iterator(SOUNDS_PATH)) {
+        // Load sound.
+        Sound sound = LoadSound(entry.path().string().c_str());
+
+        // Add texture to map of textures.
+        std::string fileName = entry.path().filename().string();
+        size_t dotIndex = fileName.find('.');
+
+        std::string fileNameWithoutExtension = entry.path().filename().string().substr(0, dotIndex);
+        sounds[fileNameWithoutExtension] = sound;
+    }
+}
+
 Game::~Game() {
     // Free textures.
     for (auto const& kv : textures) {
         UnloadTexture(kv.second);
     }
 
+    // Free sounds.
+    for (auto const& kv : sounds) {
+        UnloadSound(kv.second);
+    }
+
     board.Clear();
+
+    CloseAudioDevice();
     CloseWindow();
 }
 
@@ -113,6 +140,7 @@ void Game::HandleInput() {
 
         // Select piece.
         if (clickedPiece != nullptr && clickedPiece->color == turn) {
+            PlaySound(sounds["click"]);
             selectedPiece = clickedPiece;
         } else {
             // Do movement.
@@ -120,6 +148,8 @@ void Game::HandleInput() {
 
             if (desiredMove && selectedPiece != nullptr) {
                 DoMove(board, *desiredMove);
+            } else {
+                PlaySound(sounds["clickCancel"]);
             }
 
             // Piece must still be selected to render promotion screen.

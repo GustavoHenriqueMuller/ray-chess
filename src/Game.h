@@ -24,6 +24,9 @@ public:
     const static int CELL_SIZE = WINDOW_WIDTH / 8;
 
     const static std::string ASSETS_PATH;
+    const static std::string TEXTURES_PATH;
+    const static std::string SOUNDS_PATH;
+
     const static Color LIGHT_SHADE;
     const static Color DARK_SHADE;
 
@@ -35,6 +38,8 @@ public:
 
 private:
     void LoadTextures();
+    void LoadSounds();
+
     void HandleInput();
     void HandlePromotionInput();
     Move* GetMoveAtPosition(const Position& position);
@@ -50,10 +55,12 @@ private:
     void FilterMovesThatLeadToCheck();
     bool IsAnyMovePossible();
 
+    // Assets.
+    std::map<std::string, Texture> textures;
+    std::map<std::string, Sound> sounds;
+
     // Game state.
     Board board;
-    std::map<std::string, Texture> textures;
-
     PIECE_COLOR turn = PIECE_COLOR::C_WHITE;
     Piece* selectedPiece = nullptr;
     std::map<Piece*, std::vector<Move>> possibleMovesPerPiece;
