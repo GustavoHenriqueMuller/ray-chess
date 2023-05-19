@@ -44,7 +44,7 @@ private:
     void HandleInput();
     void HandlePromotionInput();
     Move* GetMoveAtPosition(const Position& position);
-    void DoMoveOnBoard(Board& targetBoard, const Move& move, bool doPromotion = true, bool swapTurns = true);
+    void DoMoveOnBoard(Board& targetBoard, const Move& move);
 
     void CalculateAllPossibleMovements();
     void CheckForEndOfGame();

@@ -151,17 +151,6 @@ void Board::DoMove(Piece* piece, const Move& move) {
     }
 }
 
-bool Board::MoveLeadsToCheck(Piece* piece, const Move& move) {
-    // Copy current board and current selected piece.
-    Board boardCopy = *this;
-    Piece* pieceInCopiedBoard = boardCopy.At(piece->GetPosition());
-
-    // Perform the move.
-    boardCopy.DoMove(pieceInCopiedBoard, move);
-
-    return boardCopy.IsInCheck(piece->color);
-}
-
 void Board::DoShortCastling(Piece* selectedPiece, const Move& move) {
     Piece* rook = At({selectedPiece->GetPosition().i, 7});
 
@@ -174,5 +163,39 @@ void Board::DoLongCastling(Piece* selectedPiece, const Move& move) {
 
     selectedPiece->DoMove(move);
     rook->DoMove({MOVE_TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
+}
+
+bool Board::MoveLeadsToCheck(Piece* piece, const Move& move) {
+    // Copy current board and current selected piece.
+    Board boardCopy = *this;
+    Piece* pieceInCopiedBoard = boardCopy.At(piece->GetPosition());
+
+    // Perform the move.
+    boardCopy.DoMove(pieceInCopiedBoard, move);
+
+    return boardCopy.IsInCheck(piece->color);
+}
+
+bool Board::IsInCheck(PIECE_COLOR color) {
+    std::vector<Piece*> enemyPieces = GetPiecesByColor(Piece::GetInverseColor(color));
+
+    for (Piece* piece : enemyPieces) {
+        for (const Move& move : piece->GetPossibleMoves(*this)) {
+            Piece* pieceAtMovePosition = At(move.position);
+
+            bool movePositionContainsMyKing = pieceAtMovePosition &&
+                                              pieceAtMovePosition->color == color &&
+                                              pieceAtMovePosition->type == PIECE_TYPE::KING;
+
+            bool moveIsAttack = move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION;
+
+            // If the enemy piece is attacking my king, the king is in check.
+            if (movePositionContainsMyKing && moveIsAttack) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 

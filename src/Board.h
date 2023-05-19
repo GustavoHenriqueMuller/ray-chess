@@ -28,8 +28,8 @@ public:
     std::vector<Piece*> GetPiecesByColor(PIECE_COLOR color) const;
 
     void DoMove(Piece* piece, const Move& move);
-    bool IsInCheck(PIECE_COLOR color);
     bool MoveLeadsToCheck(Piece* piece, const Move& move);
+    bool IsInCheck(PIECE_COLOR color);
 
 private:
     void DoShortCastling(Piece* selectedPiece, const Move& move);
