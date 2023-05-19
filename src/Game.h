@@ -10,10 +10,11 @@
 #include "Move.h"
 
 enum GAME_STATE {
-    RUNNING,
-    WHITE_WINS,
-    BLACK_WINS,
-    STALEMATE
+    S_RUNNING,
+    S_PROMOTION,
+    S_WHITE_WINS,
+    S_BLACK_WINS,
+    S_STALEMATE
 };
 
 class Game {
@@ -66,7 +67,7 @@ private:
     std::map<Piece*, std::vector<Move>> possibleMovesPerPiece;
 
     bool inPromotion = false;
-    GAME_STATE state = GAME_STATE::RUNNING;
+    GAME_STATE state = GAME_STATE::S_RUNNING;
 
     // Game information (current round and time).
     int round = 1;

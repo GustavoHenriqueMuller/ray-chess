@@ -56,7 +56,7 @@ void Game::LoadSounds() {
         // Load sound.
         Sound sound = LoadSound(entry.path().string().c_str());
 
-        // Add texture to map of textures.
+        // Add sound to map of sounds.
         std::string fileName = entry.path().filename().string();
         size_t dotIndex = fileName.find('.');
 
@@ -85,47 +85,52 @@ Game::~Game() {
 void Game::Run() {
     while (!WindowShouldClose()){
         // Input.
-        if (state == GAME_STATE::RUNNING) {
-            if (inPromotion) {
-                HandlePromotionInput();
-            } else {
-                HandleInput();
-            }
+        if (state == GAME_STATE::S_RUNNING) {
+            HandleInput();
+
+            // Getting new time.
+            time += GetFrameTime();
         }
 
-        // Getting new time.
-        if (state == GAME_STATE::RUNNING) {
-            time += GetFrameTime();
+        if (state == GAME_STATE::S_PROMOTION) {
+            HandlePromotionInput();
         }
 
         // Render.
         BeginDrawing();
+        {
             std::vector<Move> movesOfSelectedPiece;
 
             if (selectedPiece) {
-                movesOfSelectedPiece = possibleMovesPerPiece.at(selectedPiece);
+                try {
+                    movesOfSelectedPiece = possibleMovesPerPiece.at(selectedPiece);
+                } catch (std::out_of_range& error) {
+                    std::cout << "DEU MERDA DEU MERDA DEU MERDA" << std::endl;
+                }
             }
 
-            Renderer::ChangeMouseCursor(board, movesOfSelectedPiece, turn, inPromotion);
+            Renderer::ChangeMouseCursor(board, movesOfSelectedPiece, turn, state == GAME_STATE::S_PROMOTION);
             Renderer::Clear();
             Renderer::RenderBackground();
             Renderer::RenderPieces(board, textures);
 
-            if (!inPromotion) {
+            if (state != GAME_STATE::S_PROMOTION) {
                 Renderer::RenderMovesSelectedPiece(textures, movesOfSelectedPiece);
             }
 
             Renderer::RenderGuideText();
+            Renderer::RenderInfoBar(round, time);
 
-            if (inPromotion) {
+            // Render promotion screen.
+            if (state == GAME_STATE::S_PROMOTION) {
                 Renderer::RenderPromotionScreen(textures, selectedPiece->color);
             }
 
-            Renderer::RenderInfoBar(round, time);
-
-            if (state != GAME_STATE::RUNNING) {
+            // Render end-game screen.
+            if (state == GAME_STATE::S_WHITE_WINS || state == GAME_STATE::S_BLACK_WINS) {
                 Renderer::RenderEndScreen(state);
             }
+        }
         EndDrawing();
     }
 }
@@ -188,7 +193,7 @@ void Game::HandlePromotionInput() {
             board.Add(newPiece);
 
             // Quit promotion, deselect peon and swap turns.
-            inPromotion = false;
+            state = GAME_STATE::S_RUNNING;
 
             selectedPiece = nullptr;
             possibleMovesPerPiece.clear();
@@ -225,7 +230,7 @@ void Game::DoMove(Board& targetBoard, const Move& move, bool doPromotion, bool s
         selectedPiece->DoMove(move);
 
         if (doPromotion) {
-            inPromotion = true;
+            state = GAME_STATE::S_PROMOTION;
         }
     } else {
         // Move piece. In case of castling, also move rook.
@@ -294,11 +299,11 @@ void Game::CheckForEndOfGame() {
     if (IsInCheck(board)) {
         // If there are no moves possible and in check, declare checkmate.
         if (!IsAnyMovePossible()) {
-            state = (turn == PIECE_COLOR::C_WHITE ? GAME_STATE::BLACK_WINS : GAME_STATE::WHITE_WINS);
+            state = (turn == PIECE_COLOR::C_WHITE ? GAME_STATE::S_BLACK_WINS : GAME_STATE::S_WHITE_WINS);
         }
     } else if (!IsAnyMovePossible()) {
         // If not in check and there is not any move possible, declare stalemate.
-        state = GAME_STATE::STALEMATE;
+        state = GAME_STATE::S_STALEMATE;
     }
 }
 

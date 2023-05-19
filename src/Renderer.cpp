@@ -131,11 +131,11 @@ void Renderer::RenderEndScreen(GAME_STATE state) {
 
     const char* text;
 
-    if (state == GAME_STATE::WHITE_WINS) {
+    if (state == GAME_STATE::S_WHITE_WINS) {
         text = "White wins";
-    } else if (state == GAME_STATE::BLACK_WINS) {
+    } else if (state == GAME_STATE::S_BLACK_WINS) {
         text = "Black wins";
-    } else if (state == GAME_STATE::STALEMATE) {
+    } else if (state == GAME_STATE::S_STALEMATE) {
         text = "Stalemate";
     }
 
