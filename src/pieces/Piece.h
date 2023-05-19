@@ -9,6 +9,7 @@ class Piece; // Forward declaration (circular dependency).
 #include "../Move.h"
 #include "PieceEnums.h"
 
+#include <string>
 #include <vector>
 
 class Piece {
@@ -35,7 +36,7 @@ protected:
     bool hasMoved = false;
 
 private:
-    std::string textureName;
+    std::string name;
 };
 
 #endif //RAY_CHESS_PIECE_H

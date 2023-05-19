@@ -1,5 +1,3 @@
-#include <string>
-#include <map>
 #include "Board.h"
 #include "pieces/Peon.h"
 #include "pieces/Rook.h"
@@ -7,6 +5,9 @@
 #include "pieces/Bishop.h"
 #include "pieces/Queen.h"
 #include "pieces/King.h"
+
+#include <string>
+#include <map>
 
 Board::Board(const Board& other) {
     Clear();

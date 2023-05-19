@@ -10,7 +10,7 @@ Piece::Piece(Position position, PIECE_COLOR color, PIECE_TYPE type): position(po
     std::string colorPrefix = color == PIECE_COLOR::C_WHITE ? "w" : "b";
     std::string pieceCharacter = GetPieceCharacterByType(type);
 
-    this->textureName = colorPrefix + pieceCharacter;
+    this->name = colorPrefix + pieceCharacter;
 }
 
 void Piece::DoMove(const Move &move) {
@@ -23,7 +23,7 @@ Position Piece::GetPosition() {
 }
 
 std::string Piece::GetName() {
-    return textureName;
+    return name;
 }
 
 bool Piece::HasMoved() {
