@@ -44,10 +44,7 @@ private:
     void HandleInput();
     void HandlePromotionInput();
     Move* GetMoveAtPosition(const Position& position);
-
-    void DoMove(Board& targetBoard, const Move& move, bool doPromotion = true, bool swapTurns = true);
-    void DoShortCastling(const Board& targetBoard, const Move& move);
-    void DoLongCastling(const Board& targetBoard, const Move& move);
+    void DoMoveOnBoard(Board& targetBoard, const Move& move, bool doPromotion = true, bool swapTurns = true);
 
     void CalculateAllPossibleMovements();
     void CheckForEndOfGame();
@@ -63,11 +60,11 @@ private:
     // Game state.
     Board board;
     PIECE_COLOR turn = PIECE_COLOR::C_WHITE;
+    GAME_STATE state = GAME_STATE::S_RUNNING;
+
+    // Selected piece/possible moves state.
     Piece* selectedPiece = nullptr;
     std::map<Piece*, std::vector<Move>> possibleMovesPerPiece;
-
-    bool inPromotion = false;
-    GAME_STATE state = GAME_STATE::S_RUNNING;
 
     // Game information (current round and time).
     int round = 1;

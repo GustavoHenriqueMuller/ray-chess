@@ -148,7 +148,7 @@ void Game::HandleInput() {
             Move* desiredMove = GetMoveAtPosition(clickedPosition);
 
             if (desiredMove && selectedPiece != nullptr) {
-                DoMove(board, *desiredMove);
+                DoMoveOnBoard(board, *desiredMove, true, true);
             } else {
                 PlaySound(sounds["clickCancel"]);
             }
@@ -213,51 +213,18 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     return nullptr;
 }
 
-void Game::DoMove(Board& targetBoard, const Move& move, bool doPromotion, bool swapTurns) {
-    // Delete piece, if attack or en passant.
-    if (move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
-        targetBoard.Destroy(move.position);
-    } else if (move.type == MOVE_TYPE::EN_PASSANT) {
-        targetBoard.Destroy({selectedPiece->GetPosition().i, move.position.j});
-    }
+void Game::DoMoveOnBoard(Board& targetBoard, const Move& move, bool doPromotion, bool swapTurns) {
+    targetBoard.DoMove(selectedPiece, move);
 
-    // In case of promotion, show promotion dialog and stop game.
-    if (move.type == MOVE_TYPE::PROMOTION || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
-        selectedPiece->DoMove(move);
-
-        if (doPromotion) {
-            state = GAME_STATE::S_PROMOTION;
-        }
+    // If the move was a promotion move (and we should do promotion), show the promotion screen.
+    if (doPromotion && (move.type == MOVE_TYPE::PROMOTION || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION)) {
+        state = GAME_STATE::S_PROMOTION;
     } else {
-        // Move piece. In case of castling, also move rook.
-        if (move.type == MOVE_TYPE::SHORT_CASTLING) {
-            DoShortCastling(targetBoard, move);
-        } else if (move.type == MOVE_TYPE::LONG_CASTLING) {
-            DoLongCastling(targetBoard, move);
-        } else {
-            // Swap positions.
-            selectedPiece->DoMove(move);
-        }
-
         // Swap turns.
         if (swapTurns) {
             SwapTurns();
         }
     }
-}
-
-void Game::DoShortCastling(const Board& targetBoard, const Move& move) {
-    Piece* rook = targetBoard.At({selectedPiece->GetPosition().i, 7});
-
-    selectedPiece->DoMove(move);
-    rook->DoMove({MOVE_TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j - 2});
-}
-
-void Game::DoLongCastling(const Board& targetBoard, const Move& move) {
-    Piece* rook = targetBoard.At({selectedPiece->GetPosition().i, 0});
-
-    selectedPiece->DoMove(move);
-    rook->DoMove({MOVE_TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
 }
 
 void Game::SwapTurns() {
@@ -356,7 +323,7 @@ void Game::FilterMovesThatLeadToCheck() {
             Move& move = possibleMoves[i];
             selectedPiece = boardCopy.At(piece->GetPosition());
 
-            DoMove(boardCopy, move, false, false);
+            DoMoveOnBoard(boardCopy, move, false, false);
 
             if (IsInCheck(boardCopy)) {
                 possibleMoves.erase(possibleMoves.begin() + i);

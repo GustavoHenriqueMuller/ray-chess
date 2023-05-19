@@ -5,6 +5,7 @@ class Board;  // Forward declaration (circular dependency).
 
 #include "pieces/Piece.h"
 #include "pieces/PieceEnums.h"
+#include "Move.h"
 #include "raylib.h"
 
 #include <map>
@@ -22,11 +23,16 @@ public:
     void Add(Piece* piece);
     void Destroy(const Position &position);
     void Clear();
+
     bool IsPositionWithinBoundaries(const Position& position) const;
+    bool DoMove(Piece* selectedPiece, const Move& move);
 
     std::vector<Piece*> GetPiecesByColor(PIECE_COLOR color) const;
 
 private:
+    void DoShortCastling(Piece* selectedPiece, const Move& move);
+    void DoLongCastling(Piece* selectedPiece, const Move& move);
+
     std::vector<Piece*> whitePieces;
     std::vector<Piece*> blackPieces;
 };
