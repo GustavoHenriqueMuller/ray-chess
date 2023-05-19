@@ -48,9 +48,9 @@ private:
 
     void CalculateAllPossibleMovements();
     void CheckForEndOfGame();
-    bool IsInCheck(const Board& targetBoard);
     void FilterMovesThatAttackOppositeKing();
     void FilterMovesThatLeadToCheck();
+    void FilterCastlingMoves();
     bool IsAnyMovePossible();
 
     // Assets.

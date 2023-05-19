@@ -132,27 +132,22 @@ bool Board::IsPositionWithinBoundaries(const Position &position) const {
     return position.j >= 0 && position.j < 8 && position.i >= 0 && position.i < 8;
 }
 
-void Board::DoMove(Piece* selectedPiece, const Move& move) {
+void Board::DoMove(Piece* piece, const Move& move) {
     // Delete piece, if attack or en passant.
     if (move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
         Destroy(move.position);
     } else if (move.type == MOVE_TYPE::EN_PASSANT) {
-        Destroy({selectedPiece->GetPosition().i, move.position.j});
+        Destroy({piece->GetPosition().i, move.position.j});
     }
 
-    // In case of promotion, show promotion dialog and stop game.
-    if (move.type == MOVE_TYPE::PROMOTION || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
-        selectedPiece->DoMove(move);
+    // Move piece. In case of castling, also move rook.
+    if (move.type == MOVE_TYPE::SHORT_CASTLING) {
+        DoShortCastling(piece, move);
+    } else if (move.type == MOVE_TYPE::LONG_CASTLING) {
+        DoLongCastling(piece, move);
     } else {
-        // Move piece. In case of castling, also move rook.
-        if (move.type == MOVE_TYPE::SHORT_CASTLING) {
-            DoShortCastling(selectedPiece, move);
-        } else if (move.type == MOVE_TYPE::LONG_CASTLING) {
-            DoLongCastling(selectedPiece, move);
-        } else {
-            // Swap positions.
-            selectedPiece->DoMove(move);
-        }
+        // Swap positions.
+        piece->DoMove(move);
     }
 }
 
@@ -169,5 +164,4 @@ void Board::DoLongCastling(Piece* selectedPiece, const Move& move) {
     selectedPiece->DoMove(move);
     rook->DoMove({MOVE_TYPE::WALK, rook->GetPosition().i, rook->GetPosition().j + 3});
 }
-
 

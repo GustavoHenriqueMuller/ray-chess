@@ -259,7 +259,10 @@ void Game::CalculateAllPossibleMovements() {
 void Game::CheckForEndOfGame() {
     std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
 
-    if (IsInCheck(board)) {
+    if (board.IsInCheck(turn)) {
+        // Filter castling moves.
+        FilterCastlingMoves();
+
         // If there are no moves possible and in check, declare checkmate.
         if (!IsAnyMovePossible()) {
             state = (turn == PIECE_COLOR::C_WHITE ? GAME_STATE::S_BLACK_WINS : GAME_STATE::S_WHITE_WINS);
@@ -268,29 +271,6 @@ void Game::CheckForEndOfGame() {
         // If not in check and there is not any move possible, declare stalemate.
         state = GAME_STATE::S_STALEMATE;
     }
-}
-
-bool Game::IsInCheck(const Board& targetBoard) {
-    std::vector<Piece*> enemyPieces = targetBoard.GetPiecesByColor(Piece::GetInverseColor(turn));
-
-    for (Piece* piece : enemyPieces) {
-        for (const Move& move : piece->GetPossibleMoves(targetBoard)) {
-            Piece* pieceAtMovePosition = targetBoard.At(move.position);
-
-            bool movePositionContainsMyKing = pieceAtMovePosition &&
-                                              pieceAtMovePosition->color == turn &&
-                                              pieceAtMovePosition->type == PIECE_TYPE::KING;
-
-            bool moveIsAttack = move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION;
-
-            // If the enemy piece is attacking my king, the king is in check.
-            if (movePositionContainsMyKing && moveIsAttack) {
-                return true;
-            }
-        }
-    }
-
-    return false;
 }
 
 void Game::FilterMovesThatAttackOppositeKing() {
@@ -325,12 +305,24 @@ void Game::FilterMovesThatLeadToCheck() {
 
             DoMoveOnBoard(boardCopy, move, false, false);
 
-            if (IsInCheck(boardCopy)) {
+            if (boardCopy.IsInCheck(turn)) {
                 possibleMoves.erase(possibleMoves.begin() + i);
             }
 
             // Restore old board.
             selectedPiece = currentSelectedPiece;
+        }
+    }
+}
+
+void Game::FilterCastlingMoves() {
+    for (auto& [piece, possibleMoves] : possibleMovesPerPiece) {
+        for (int i = possibleMoves.size() - 1; i >= 0; i--) {
+            MOVE_TYPE type = possibleMoves[i].type;
+
+            if (type == MOVE_TYPE::SHORT_CASTLING || type == MOVE_TYPE::LONG_CASTLING) {
+                possibleMoves.erase(possibleMoves.begin() + i);
+            }
         }
     }
 }
