@@ -128,6 +128,10 @@ std::vector<Piece*> Board::GetPiecesByColor(PIECE_COLOR color) const {
     }
 }
 
+Piece* Board::GetLastMovedPiece() const {
+    return At(lastMovedPiecePosition);
+}
+
 bool Board::IsPositionWithinBoundaries(const Position &position) const {
     return position.j >= 0 && position.j < 8 && position.i >= 0 && position.i < 8;
 }
@@ -149,6 +153,8 @@ void Board::DoMove(Piece* piece, const Move& move) {
         // Swap positions.
         piece->DoMove(move);
     }
+
+    lastMovedPiecePosition = piece->GetPosition();
 }
 
 void Board::DoShortCastling(Piece* selectedPiece, const Move& move) {
@@ -198,4 +204,3 @@ bool Board::IsInCheck(PIECE_COLOR color) {
 
     return false;
 }
-

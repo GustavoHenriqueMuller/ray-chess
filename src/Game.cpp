@@ -324,13 +324,3 @@ bool Game::IsAnyMovePossible() {
 
     return false;
 }
-
-
-
-
-
-
-
-
-
-

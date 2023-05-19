@@ -26,6 +26,7 @@ public:
 
     bool IsPositionWithinBoundaries(const Position& position) const;
     std::vector<Piece*> GetPiecesByColor(PIECE_COLOR color) const;
+    Piece* GetLastMovedPiece() const;
 
     void DoMove(Piece* piece, const Move& move);
     bool MoveLeadsToCheck(Piece* piece, const Move& move);
@@ -37,6 +38,8 @@ private:
 
     std::vector<Piece*> whitePieces;
     std::vector<Piece*> blackPieces;
+
+    Position lastMovedPiecePosition;
 };
 
 #endif //RAY_CHESS_BOARD_H

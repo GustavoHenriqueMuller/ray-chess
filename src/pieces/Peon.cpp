@@ -85,7 +85,7 @@ bool Peon::CheckEnPassant(const Board& board, const Position& piecePosition, con
         ) {
         Peon* peon = (Peon*) piece;
 
-        if (peon->hasOnlyMadeDoubleWalk) {
+        if (peon->hasOnlyMadeDoubleWalk && peon == board.GetLastMovedPiece()) {
             return true;
         }
     }
