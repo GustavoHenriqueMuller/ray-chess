@@ -62,3 +62,13 @@
 1975	2422	7062081473429034	ray_chess.exe	8b2ffb118957257b
 4	431	7062083020846306	CMakeFiles/ray_chess.dir/src/Board.cpp.obj	bab740bf4244eaef
 431	878	7062083025276334	ray_chess.exe	8b2ffb118957257b
+11	560	7062094874172283	CMakeFiles/ray_chess.dir/src/Main.cpp.obj	e63de27a749e39b8
+3	762	7062094876193036	CMakeFiles/ray_chess.dir/src/Renderer.cpp.obj	acc0e1efa2d2d2f6
+3	1295	7062094976528138	CMakeFiles/ray_chess.dir/src/Game.cpp.obj	e81708a3692bc6a7
+1295	1800	7062094981545137	ray_chess.exe	8b2ffb118957257b
+4	1248	7062139532071214	CMakeFiles/ray_chess.dir/src/Game.cpp.obj	e81708a3692bc6a7
+1248	1692	7062139536480912	ray_chess.exe	8b2ffb118957257b
+8	384	7062147915152543	CMakeFiles/ray_chess.dir/src/Main.cpp.obj	e63de27a749e39b8
+3	538	7062147916692519	CMakeFiles/ray_chess.dir/src/Renderer.cpp.obj	acc0e1efa2d2d2f6
+6	1250	7062147923792510	CMakeFiles/ray_chess.dir/src/Game.cpp.obj	e81708a3692bc6a7
+1250	1682	7062147928089064	ray_chess.exe	8b2ffb118957257b

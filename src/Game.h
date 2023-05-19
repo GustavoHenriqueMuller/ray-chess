@@ -42,9 +42,9 @@ private:
     void LoadSounds();
 
     void HandleInput();
-    void HandlePromotionInput();
+    void HandleInputPromotion();
     Move* GetMoveAtPosition(const Position& position);
-    void DoMoveOnBoard(Board& targetBoard, const Move& move);
+    void DoMoveOnBoard(const Move& move);
 
     void CalculateAllPossibleMovements();
     void CheckForEndOfGame();

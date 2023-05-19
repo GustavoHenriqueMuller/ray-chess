@@ -93,7 +93,7 @@ void Game::Run() {
         }
 
         if (state == GAME_STATE::S_PROMOTION) {
-            HandlePromotionInput();
+            HandleInputPromotion();
         }
 
         // Render.
@@ -148,7 +148,7 @@ void Game::HandleInput() {
             Move* desiredMove = GetMoveAtPosition(clickedPosition);
 
             if (desiredMove && selectedPiece != nullptr) {
-                DoMoveOnBoard(board, *desiredMove);
+                DoMoveOnBoard(*desiredMove);
             } else {
                 PlaySound(sounds["clickCancel"]);
             }
@@ -164,7 +164,7 @@ void Game::HandleInput() {
     }
 }
 
-void Game::HandlePromotionInput() {
+void Game::HandleInputPromotion() {
     if (IsMouseButtonPressed(0)) {
         Vector2 mousePosition = GetMousePosition();
         mousePosition.y -= Game::INFO_BAR_HEIGHT;
@@ -213,10 +213,10 @@ Move* Game::GetMoveAtPosition(const Position& position) {
     return nullptr;
 }
 
-void Game::DoMoveOnBoard(Board& targetBoard, const Move& move) {
-    targetBoard.DoMove(selectedPiece, move);
+void Game::DoMoveOnBoard(const Move& move) {
+    board.DoMove(selectedPiece, move);
 
-    // If the move was a promotion move (and we should do promotion), show the promotion screen.
+    // If the move was a promotion move, show the promotion screen. Else, swap turns.
     if (move.type == MOVE_TYPE::PROMOTION || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
         state = GAME_STATE::S_PROMOTION;
     } else {
@@ -304,6 +304,7 @@ void Game::FilterMovesThatLeadToCheck() {
                 for (const Position& position : intermediaryPositions) {
                     if (board.MoveLeadsToCheck(piece, {MOVE_TYPE::WALK, position})) {
                         possibleMoves.erase(possibleMoves.begin() + i);
+                        break;
                     }
                 }
 
