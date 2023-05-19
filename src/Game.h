@@ -50,7 +50,6 @@ private:
     void CheckForEndOfGame();
     void FilterMovesThatAttackOppositeKing();
     void FilterMovesThatLeadToCheck();
-    void FilterCastlingMoves();
     bool IsAnyMovePossible();
 
     // Assets.

@@ -257,9 +257,6 @@ void Game::CheckForEndOfGame() {
     std::vector<Piece*> piecesOfCurrentTurn = board.GetPiecesByColor(turn);
 
     if (board.IsInCheck(turn)) {
-        // Filter castling moves.
-        FilterCastlingMoves();
-
         // If there are no moves possible and in check, declare checkmate.
         if (!IsAnyMovePossible()) {
             state = (turn == PIECE_COLOR::C_WHITE ? GAME_STATE::S_BLACK_WINS : GAME_STATE::S_WHITE_WINS);
@@ -292,20 +289,26 @@ void Game::FilterMovesThatAttackOppositeKing() {
 void Game::FilterMovesThatLeadToCheck() {
     for (auto& [piece, possibleMoves] : possibleMovesPerPiece) {
         for (int i = possibleMoves.size() - 1; i >= 0; i--) {
-            // If the moves lead to a check, remove.
-            if (board.MoveLeadsToCheck(piece, possibleMoves[i])) {
-                possibleMoves.erase(possibleMoves.begin() + i);
-            }
-        }
-    }
-}
+            Move& move = possibleMoves[i];
 
-void Game::FilterCastlingMoves() {
-    for (auto& [piece, possibleMoves] : possibleMovesPerPiece) {
-        for (int i = possibleMoves.size() - 1; i >= 0; i--) {
-            MOVE_TYPE type = possibleMoves[i].type;
+            // If short castling or long castling, check for intermediary positions between king and rook.
+            if (move.type == MOVE_TYPE::SHORT_CASTLING || move.type == MOVE_TYPE::LONG_CASTLING) {
+                std::vector<Position> intermediaryPositions;
 
-            if (type == MOVE_TYPE::SHORT_CASTLING || type == MOVE_TYPE::LONG_CASTLING) {
+                if (move.type == MOVE_TYPE::SHORT_CASTLING) {
+                    intermediaryPositions = {{piece->GetPosition().i, 5}, {piece->GetPosition().i, 6}};
+                } else {
+                    intermediaryPositions = {{piece->GetPosition().i, 3}, {piece->GetPosition().i, 2}};
+                }
+
+                for (const Position& position : intermediaryPositions) {
+                    if (board.MoveLeadsToCheck(piece, {MOVE_TYPE::WALK, position})) {
+                        possibleMoves.erase(possibleMoves.begin() + i);
+                    }
+                }
+
+            // If normal move.
+            } else if (board.MoveLeadsToCheck(piece, possibleMoves[i])) {
                 possibleMoves.erase(possibleMoves.begin() + i);
             }
         }
