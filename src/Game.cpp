@@ -102,11 +102,7 @@ void Game::Run() {
             std::vector<Move> movesOfSelectedPiece;
 
             if (selectedPiece) {
-                try {
-                    movesOfSelectedPiece = possibleMovesPerPiece.at(selectedPiece);
-                } catch (std::out_of_range& error) {
-                    std::cout << "DEU MERDA DEU MERDA DEU MERDA" << std::endl;
-                }
+                movesOfSelectedPiece = possibleMovesPerPiece.at(selectedPiece);
             }
 
             Renderer::ChangeMouseCursor(board, movesOfSelectedPiece, turn, state == GAME_STATE::S_PROMOTION);
