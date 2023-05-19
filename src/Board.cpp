@@ -132,7 +132,7 @@ bool Board::IsPositionWithinBoundaries(const Position &position) const {
     return position.j >= 0 && position.j < 8 && position.i >= 0 && position.i < 8;
 }
 
-bool Board::DoMove(Piece* selectedPiece, const Move& move) {
+void Board::DoMove(Piece* selectedPiece, const Move& move) {
     // Delete piece, if attack or en passant.
     if (move.type == MOVE_TYPE::ATTACK || move.type == MOVE_TYPE::ATTACK_AND_PROMOTION) {
         Destroy(move.position);

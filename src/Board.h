@@ -25,7 +25,7 @@ public:
     void Clear();
 
     bool IsPositionWithinBoundaries(const Position& position) const;
-    bool DoMove(Piece* selectedPiece, const Move& move);
+    void DoMove(Piece* selectedPiece, const Move& move);
 
     std::vector<Piece*> GetPiecesByColor(PIECE_COLOR color) const;
 
