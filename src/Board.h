@@ -29,6 +29,7 @@ public:
 
     void DoMove(Piece* piece, const Move& move);
     bool IsInCheck(PIECE_COLOR color);
+    bool MoveLeadsToCheck(Piece* piece, const Move& move);
 
 private:
     void DoShortCastling(Piece* selectedPiece, const Move& move);

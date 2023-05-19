@@ -295,22 +295,10 @@ void Game::FilterMovesThatAttackOppositeKing() {
 void Game::FilterMovesThatLeadToCheck() {
     for (auto& [piece, possibleMoves] : possibleMovesPerPiece) {
         for (int i = possibleMoves.size() - 1; i >= 0; i--) {
-            // Copy current board and current selected piece.
-            Board boardCopy = board;
-            Piece* currentSelectedPiece = selectedPiece;
-
-            // Perform the move.
-            Move& move = possibleMoves[i];
-            selectedPiece = boardCopy.At(piece->GetPosition());
-
-            DoMoveOnBoard(boardCopy, move, false, false);
-
-            if (boardCopy.IsInCheck(turn)) {
+            // If the moves lead to a check, remove.
+            if (board.MoveLeadsToCheck(selectedPiece, possibleMoves[i])) {
                 possibleMoves.erase(possibleMoves.begin() + i);
             }
-
-            // Restore old board.
-            selectedPiece = currentSelectedPiece;
         }
     }
 }

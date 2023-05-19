@@ -151,6 +151,17 @@ void Board::DoMove(Piece* piece, const Move& move) {
     }
 }
 
+bool Board::MoveLeadsToCheck(Piece* piece, const Move& move) {
+    // Copy current board and current selected piece.
+    Board boardCopy = *this;
+    Piece* pieceInCopiedBoard = boardCopy.At(piece->GetPosition());
+
+    // Perform the move.
+    boardCopy.DoMove(pieceInCopiedBoard, move);
+
+    return boardCopy.IsInCheck(piece->color);
+}
+
 void Board::DoShortCastling(Piece* selectedPiece, const Move& move) {
     Piece* rook = At({selectedPiece->GetPosition().i, 7});
 
